@@ -10,12 +10,12 @@ class Cell extends Box {
 }
 
 Cell.prototype.getNeighborIndices = function() {
-    return {
-        'LEFT'  :   new GridIndex(this.index.row - 1, this.index.column),
-        'RIGHT' :   new GridIndex(this.index.row + 1, this.index.column),
-        'UP'    :   new GridIndex(this.index.row, this.index.column + 1),
-        'DOWN'  :   new GridIndex(this.index.row, this.index.column - 1)
-    };
+    return new Map([
+        ['LEFT'  ,   new GridIndex(this.index.row - 1, this.index.column)],
+        ['RIGHT' ,   new GridIndex(this.index.row + 1, this.index.column)],
+        ['UP'    ,   new GridIndex(this.index.row, this.index.column + 1)],
+        ['DOWN'  ,   new GridIndex(this.index.row, this.index.column - 1)]
+    ]);
 };
 
 export default Cell;

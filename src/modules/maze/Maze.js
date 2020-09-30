@@ -13,31 +13,30 @@ class Maze {
     }
 }
 
+
 Maze.prototype.validCellIndex = function(index) {
     return  (index.row < this.rows)         && 
             (index.column < this.columns)   &&
             (index.row >= 0)                &&
             (index.column >= 0);
-}
+};
 
 Maze.prototype.getUnvisitedNeighbors = function(indices) {
     let neighbors = [];
-    
-    for (const wall in indices) {
-        let i = indices[wall];
 
+    indices.forEach((i, wall) => {
         if (this.validCellIndex(i)) {
             let cell = this.cells[i.row][i.column];
             if (!cell.visited) { neighbors.push([cell, wall]); }
         }
-    }
-    
-    return (neighbors);
-}
+    });
+
+    return neighbors;
+};
 
 Maze.prototype.generator = function* (row, column) {
     let index = new GridIndex(row, column);
-    if (!this.validCellIndex(index)) { throw RangeError ('Starting index out of range.') }
+    if (!this.validCellIndex(index)) { throw RangeError ('Starting index out of range.'); }
 
     let stack = [];
     let initialCell = this.cells[index.row][index.column];
@@ -61,8 +60,6 @@ Maze.prototype.generator = function* (row, column) {
             yield nextCell;
         }
     }
-
-    return cells;
-}
+};
 
 export default Maze;
