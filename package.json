@@ -1,0 +1,23 @@
+{
+  "name": "maze-generator",
+  "version": "1.0.0",
+  "description": "Generates a maze and maze animation using recursive depth-first search.",
+  "scripts": {
+    "test-js": "npx babel-node src/tests/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RobLaughlin/maze-generator.git"
+  },
+  "author": "Robert Laughlin",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/RobLaughlin/maze-generator/issues"
+  },
+  "homepage": "https://github.com/RobLaughlin/maze-generator#readme",
+  "devDependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/node": "^7.10.5",
+    "@babel/preset-env": "^7.11.5"
+  }
+}
