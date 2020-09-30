@@ -13,7 +13,6 @@ class Maze {
     }
 }
 
-
 Maze.prototype.validCellIndex = function(index) {
     return  (index.row < this.rows)         && 
             (index.column < this.columns)   &&
