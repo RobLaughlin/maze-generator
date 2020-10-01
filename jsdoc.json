@@ -11,6 +11,9 @@
     },
     "opts": {
       "recurse": true,
-      "destination": "./docs/"
+      "destination": "./docs/",
+      "encoding": "utf8",
+      "sort": false,
+      "readme": "README.md"
     }
   }
