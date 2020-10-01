@@ -36,8 +36,6 @@ class Maze {
         this.generated = [];
     }
 
-
-
     /**
      * Determines whether a given 2D [Index]{@link GridIndex} is out of range in the cells array.
      * @param {GridIndex} index - The 2D index to check for.
@@ -101,7 +99,7 @@ class Maze {
             throw RangeError ('Starting index out of range.'); 
         }
 
-        this.generated = [];
+        this.reset();
 
         // (1) Choose the initial cell, mark it as visited and push it to the stack.
         let stack = [];
@@ -140,6 +138,11 @@ class Maze {
             }
         }
         return this.generated;
+   }
+
+   /** Reset the maze. */
+   reset() {
+       this.generated = [];
    }
 }
 
