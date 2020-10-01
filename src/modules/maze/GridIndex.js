@@ -17,8 +17,5 @@ class GridIndex {
         this.column = column;
     }
 }
-var exports = {
-    GridIndex: GridIndex
-};
 
 export default GridIndex;

@@ -32,104 +32,104 @@ class Maze {
             ))
         );
     }
-}
 
-/**
- * Determines whether a given 2D [Index]{@link GridIndex} is out of range in the cells array.
- * @param {GridIndex} index - The 2D index to check for.
- * @returns {boolean} If the given index is in range.
- */
-Maze.prototype.validCellIndex = function(index) {
-    return  (index.row < this.rows)         && 
-            (index.column < this.columns)   &&
-            (index.row >= 0)                &&
-            (index.column >= 0);
-};
-
-/**
- * Given a mapping of [Walls]{@link Wall} to [Index]{@link GridIndex}:
- * 1. First determine whether the index is valid.
- * 2. If the index is valid and the cell at that index is unvisited, push it to the unvisited neighbors array.
- * @param {Map<Wall, GridIndex>} indices - A mapping of [Walls]{@link Wall} to [Index]{@link GridIndex}.
- * @example
- * Maze.getUnvisitedCells(Cell.getNeighborIndices()) // Gets all unvisited neighbors
- * @returns {((Cell|Wall)|Array)}
- * A tuple-like array of length 2 with the unvisited cell as the first parameter and the respective wall as the second parameter.
- */
-Maze.prototype.getUnvisitedCells = function(indices) {
-    let neighbors = [];
-
-    indices.forEach((i, wall) => {
-        if (this.validCellIndex(i)) {
-            let cell = this.cells[i.row][i.column];
-            if (!cell.visited) { neighbors.push([cell, wall]); }
-        }
-    });
-
-    return neighbors;
-};
-
-/**
- * Main generator method for generating the maze.
- * Uses row and column instead of {@link GridIndex} to have easier implementation for consumers.
- * @generator
- * @param {int} row - Starting row index of the maze.
- * @param {int} column - Starting column index of the maze.
- * @yields {Cell} The next randomly chosen cell in the maze generation.
- * The first cell is always the cell chosen by index at (row, column).
- * 
- * @example
- * // Algorithm (Recursive depth-first search with explicit stack):
- * 1. Choose the initial cell, mark it as visited and push it to the stack.
- * 2. While the stack is not empty.
- *      1. Pop a cell from the stack and make it a current cell.
- *      2. If the current cell has any neighbours which have not been visited.
- *          1. Push the current cell to the stack.
- *          2. Choose one of the unvisited neighbours.
- *          3. Remove the wall between the current cell and the chosen cell.
- *          4. Mark the chosen cell as visited and push it to the stack.
- */
-Maze.prototype.generator = function* (row, column) {
-    // Bounds checking for the given starting index.
-    let index = new GridIndex(row, column);
-    if (!this.validCellIndex(index)) { throw RangeError ('Starting index out of range.'); }
-
-    // (1) Choose the initial cell, mark it as visited and push it to the stack.
-    let stack = [];
-    let initialCell = this.cells[index.row][index.column];
-    initialCell.visited = true;
-    stack.push(initialCell);
-    yield initialCell;
-
-    // (2) While the stack is not empty:
-    while (stack.length > 0) {
-
-        // (3) Pop a cell from the stack and make it a current cell.
-        let currentCell = stack.pop();
-
-        // (4) If the current cell has any neighbours which have not been visited:
-        let neighbors = this.getUnvisitedCells(currentCell.getNeighborIndices());
-
-        if (neighbors.length > 0) {
-
-            // (5) Push the current cell to the stack.
-            stack.push(currentCell);
-
-            // (6) Choose one of the unvisited neighbours.
-            let i = Math.floor(Math.random() * neighbors.length);
-            let nextCell = neighbors[i][0];
-            let wall = neighbors[i][1];
-            
-            // (7) Remove the wall between the current cell and the chosen cell.
-            nextCell.toggleOpposite(wall, false);
-            
-            // (8) Mark the chosen cell as visited and push it to the stack.
-            nextCell.visited = true;
-            stack.push(nextCell);
-
-            yield nextCell;
-        }
+    /**
+     * Determines whether a given 2D [Index]{@link GridIndex} is out of range in the cells array.
+     * @param {GridIndex} index - The 2D index to check for.
+     * @returns {boolean} If the given index is in range.
+     */
+    validCellIndex(index) {
+        return  (index.row < this.rows)         && 
+                (index.column < this.columns)   &&
+                (index.row >= 0)                &&
+                (index.column >= 0);
     }
-};
+
+    /**
+     * Given a mapping of [Walls]{@link Wall} to [Index]{@link GridIndex}:
+     * 1. First determine whether the index is valid.
+     * 2. If the index is valid and the cell at that index is unvisited, push it to the unvisited neighbors array.
+     * @param {Map<Wall, GridIndex>} indices - A mapping of [Walls]{@link Wall} to [Index]{@link GridIndex}.
+     * @example
+     * Maze.getUnvisitedCells(Cell.getNeighborIndices()) // Gets all unvisited neighbors
+     * @returns {((Cell|Wall)|Array)}
+     * A tuple-like array of length 2 with the unvisited cell as the first parameter and the respective wall as the second parameter.
+     */
+    getUnvisitedCells(indices) {
+        let neighbors = [];
+
+        indices.forEach((i, wall) => {
+            if (this.validCellIndex(i)) {
+                let cell = this.cells[i.row][i.column];
+                if (!cell.visited) { neighbors.push([cell, wall]); }
+            }
+        });
+
+        return neighbors;
+    }
+
+    /**
+    * Main generator method for generating the maze.
+    * Uses row and column instead of {@link GridIndex} to have easier implementation for consumers.
+    * @generator
+    * @param {int} row - Starting row index of the maze.
+    * @param {int} column - Starting column index of the maze.
+    * @yields {Cell} The next randomly chosen cell in the maze generation.
+    * The first cell is always the cell chosen by index at (row, column).
+    * 
+    * @example
+    * // Algorithm (Recursive depth-first search with explicit stack):
+    * 1. Choose the initial cell, mark it as visited and push it to the stack.
+    * 2. While the stack is not empty.
+    *      1. Pop a cell from the stack and make it a current cell.
+    *      2. If the current cell has any neighbours which have not been visited.
+    *          1. Push the current cell to the stack.
+    *          2. Choose one of the unvisited neighbours.
+    *          3. Remove the wall between the current cell and the chosen cell.
+    *          4. Mark the chosen cell as visited and push it to the stack.
+    */
+   * generator(row, column) {
+       // Bounds checking for the given starting index.
+       let index = new GridIndex(row, column);
+       if (!this.validCellIndex(index)) { throw RangeError ('Starting index out of range.'); }
+   
+       // (1) Choose the initial cell, mark it as visited and push it to the stack.
+       let stack = [];
+       let initialCell = this.cells[index.row][index.column];
+       initialCell.visited = true;
+       stack.push(initialCell);
+       yield initialCell;
+   
+       // (2) While the stack is not empty:
+       while (stack.length > 0) {
+   
+           // (3) Pop a cell from the stack and make it a current cell.
+           let currentCell = stack.pop();
+   
+           // (4) If the current cell has any neighbours which have not been visited:
+           let neighbors = this.getUnvisitedCells(currentCell.getNeighborIndices());
+   
+           if (neighbors.length > 0) {
+   
+               // (5) Push the current cell to the stack.
+               stack.push(currentCell);
+   
+               // (6) Choose one of the unvisited neighbours.
+               let i = Math.floor(Math.random() * neighbors.length);
+               let nextCell = neighbors[i][0];
+               let wall = neighbors[i][1];
+               
+               // (7) Remove the wall between the current cell and the chosen cell.
+               nextCell.toggleOpposite(wall, false);
+               
+               // (8) Mark the chosen cell as visited and push it to the stack.
+               nextCell.visited = true;
+               stack.push(nextCell);
+   
+               yield nextCell;
+           }
+       }
+   }
+}
 
 export default Maze;

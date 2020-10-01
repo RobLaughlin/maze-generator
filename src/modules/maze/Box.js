@@ -11,15 +11,16 @@ class Wall {
         /** @property {boolean} enabled Visibility of the wall. */
         this.enabled = enabled;
     }
-}
 
-/**
- * Toggle functionality to turn the visibility of the wall on or off.
- * @param {boolean} enabled - Visibility of the wall
- */
-Wall.prototype.toggle = function(enabled) {
-    this.enabled = enabled;
-};
+    /**
+     * Toggle functionality to turn the visibility of the wall on or off.
+     * @param {boolean} enabled - Visibility of the wall
+     */
+    toggle(enabled) {
+        this.enabled = enabled;
+    }
+
+}
 
 /** Box object with four walls. 
  * @memberof module:Maze
@@ -45,6 +46,44 @@ class Box {
         /** @property {boolean} down Bottom-side wall of the box. */
         this.down   = new Wall(down);
     }
+
+    /**
+     * Wrapper method to change the visibility of a given {@link Wall} in the box based off of a string.
+     * @param {Box.WALLS} wall - What wall to toggle.
+     * @param {boolean} enable - To toggle on or off.
+     */
+    toggleWall(wall, enable) {
+        switch (wall) {
+            case 'LEFT'     :   this.left.toggle(enable);  break;
+            case 'UP'       :   this.up.toggle(enable);    break;
+            case 'RIGHT'    :   this.right.toggle(enable); break;
+            case 'DOWN'     :   this.down.toggle(enable);  break;
+            default         :                               break;
+        }
+    }
+
+    /**
+     * Wrapper method to change the visibility of the opposite {@link Wall} in the box based off of a string.
+     * Felt much easier to just use a switch statement here rather than reuse {@link Box.toggleWall}.
+     * @example Box.toggleOpposite('LEFT', true) // Toggles the right wall on.
+     * @param {Box.WALLS} wall - What wall that will be the opposite of the toggled wall.
+     * @param {boolean} enable - To toggle on or off.
+     */
+    toggleOpposite(wall, enable) {
+        switch (wall) {
+            case 'LEFT'     :   this.right.toggle(enable);     break;
+            case 'UP'       :   this.down.toggle(enable);      break;
+            case 'RIGHT'    :   this.left.toggle(enable);      break;
+            case 'DOWN'     :   this.up.toggle(enable);        break;
+            default         :                                   break;
+        }
+    }
+
+    /**
+     * Sets all of the walls either on or off.
+     * @param {boolean} enable - To toggle on or off.
+     */
+    setWalls(enable) { this.left = this.up = this.right = this.down = enable; }
 }
 
 /**
@@ -65,43 +104,5 @@ Box.WALLS = {
     /** String value for the bottom wall. */
     DOWN: 'DOWN'
 };
-
-/**
- * Wrapper method to change the visibility of a given {@link Wall} in the box based off of a string.
- * @param {Box.WALLS} wall - What wall to toggle.
- * @param {boolean} enable - To toggle on or off.
- */
-Box.prototype.toggleWall = function(wall, enable) {
-    switch (wall) {
-        case 'LEFT'     :   this.left.toggle(enable);  break;
-        case 'UP'       :   this.up.toggle(enable);    break;
-        case 'RIGHT'    :   this.right.toggle(enable); break;
-        case 'DOWN'     :   this.down.toggle(enable);  break;
-        default         :                               break;
-    }
-};
-
-/**
- * Wrapper method to change the visibility of the opposite {@link Wall} in the box based off of a string.
- * Felt much easier to just use a switch statement here rather than reuse {@link Box.toggleWall}.
- * @example Box.toggleOpposite('LEFT', true) // Toggles the right wall on.
- * @param {Box.WALLS} wall - What wall that will be the opposite of the toggled wall.
- * @param {boolean} enable - To toggle on or off.
- */
-Box.prototype.toggleOpposite = function(wall, enable) {
-    switch (wall) {
-        case 'LEFT'     :   this.right.toggle(enable);     break;
-        case 'UP'       :   this.down.toggle(enable);      break;
-        case 'RIGHT'    :   this.left.toggle(enable);      break;
-        case 'DOWN'     :   this.up.toggle(enable);        break;
-        default         :                                   break;
-    }
-};
-
-/**
- * Sets all of the walls either on or off.
- * @param {boolean} enable - To toggle on or off.
- */
-Box.prototype.setWalls = function(enable) { this.left = this.up = this.right = this.down = enable; };
 
 export default Box;

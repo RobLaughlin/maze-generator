@@ -22,19 +22,19 @@ class Cell extends Box {
         /** @property {boolean} visited If the cell has been visited or not. */
         this.visited = visited;
     }
-}
 
-/**
- * Fetch all the possible adjacent neighbors on a grid based off of the cell's position.
- * @returns {Map<string, GridIndex>} - A map of each adjacent neighbor keyed to the respective direction of that neighbor.
- */
-Cell.prototype.getNeighborIndices = function() {
-    return new Map([
-        ['LEFT'  ,   new GridIndex(this.index.row - 1, this.index.column)],
-        ['RIGHT' ,   new GridIndex(this.index.row + 1, this.index.column)],
-        ['UP'    ,   new GridIndex(this.index.row, this.index.column + 1)],
-        ['DOWN'  ,   new GridIndex(this.index.row, this.index.column - 1)]
-    ]);
-};
+    /**
+     * Fetch all the possible adjacent neighbors on a grid based off of the cell's position.
+     * @returns {Map<string, GridIndex>} - A map of each adjacent neighbor keyed to the respective direction of that neighbor.
+     */
+    getNeighborIndices() {
+        return new Map([
+            ['LEFT'  ,   new GridIndex(this.index.row - 1, this.index.column)],
+            ['RIGHT' ,   new GridIndex(this.index.row + 1, this.index.column)],
+            ['UP'    ,   new GridIndex(this.index.row, this.index.column + 1)],
+            ['DOWN'  ,   new GridIndex(this.index.row, this.index.column - 1)]
+        ]);
+    }
+}
 
 export default Cell;
