@@ -63,29 +63,5 @@
             cellIndex += 1;
         }
     }
-    /*
-    function init() {
-        var stage = new createjs.Stage('canvas');
-        
-        var maze = new Maze(50, 50);
-        var mGen = maze.generator(0, 0);
-
-        function update() {
-            let generated = mGen.next();
-            let cell = generated.value;
-            if (!generated.done) {
-                var box = new createjs.Rect();
-                box.beginStroke("Green");
-                box.drawRect(80 * cell.index.row, 80 * (40 - cell.index.column), 80, 80);
-                stage.update();
-            }
-        }
-
-        createjs.Ticker.framerate = 60;
-        createjs.Ticker.addEventListener("tick", update);
-    }
-
-    init();
-    */
 </script>
 </html>
