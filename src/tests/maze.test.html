@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Maze Test</title>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <script src="https://cdn.jsdelivr.net/npm/p5@1.1.9/lib/p5.js"></script>
+    <script src="maze.bundle.js"></script>
+    <style>
+        body {background-color: black;}
+        #canvasContainer {
+            background-color: white;
+            width: 800px;
+            height: 800px;
+            margin: auto;
+        }
+        #canvas {
+            width: 800px;
+            height: 800px;
+            margin: auto;
+        }
+    </style>
+</head>
+<body>
+    <div id="canvasContainer">
+        
+    </div>
+</body>
+<script>
+    function setup() {
+        let cnv = createCanvas(800, 800);
+        cnv.parent('canvasContainer');
+
+        maze = new Maze(50, 50);
+        mGen = maze.generator(0, 0);
+    }
+
+    function draw() {
+        let generated = mGen.next();
+        let cell = generated.value;
+        if (!generated.done) {
+            let swcX = 20 * cell.index.row;
+            let swcY = 20 * (40 - cell.index.column)
+
+            if (cell.down) {
+                line(swcX, swcY, swcX + 20, swcY)
+            }
+
+            if (cell.left) {
+                line(swcX, swcY, swcX, swcY + 20)
+            }
+
+            if (cell.up) {
+                line(swcX, swcY + 20, swcX + 20, swcY + 20)
+            } 
+            
+            if (cell.right) {
+                line(swcX + 20, swcY, swcX + 20, swcY + 20)
+            }     
+        }
+    }
+    /*
+    function init() {
+        var stage = new createjs.Stage('canvas');
+        
+        var maze = new Maze(50, 50);
+        var mGen = maze.generator(0, 0);
+
+        function update() {
+            let generated = mGen.next();
+            let cell = generated.value;
+            if (!generated.done) {
+                var box = new createjs.Rect();
+                box.beginStroke("Green");
+                box.drawRect(20 * cell.index.row, 20 * (40 - cell.index.column), 20, 20);
+                stage.update();
+            }
+        }
+
+        createjs.Ticker.framerate = 60;
+        createjs.Ticker.addEventListener("tick", update);
+    }
+
+    init();
+    */
+</script>
+</html>
