@@ -84,10 +84,9 @@ class Maze {
     /**
     * Main generator method for generating the maze.
     * Uses row and column instead of {@link GridIndex} to have easier implementation for consumers.
-    * @generator
     * @param {int} row - Starting row index of the maze.
     * @param {int} column - Starting column index of the maze.
-    * @yields {Cell} The next randomly chosen cell in the maze generation.
+    * @returns {Array.Cell[]} The generated maze data.
     * The first cell is always the cell chosen by index at (row, column).
     * 
     * @example
