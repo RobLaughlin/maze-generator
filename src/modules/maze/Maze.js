@@ -31,7 +31,12 @@ class Maze {
                 new Cell(new GridIndex(r, c))
             ))
         );
+
+        /** @property {Array.Cell[]} cells 2D Array of [Cells]{@link Cell} with the previously generated maze.*/
+        this.generated = [];
     }
+
+
 
     /**
      * Determines whether a given 2D [Index]{@link GridIndex} is out of range in the cells array.
@@ -88,47 +93,53 @@ class Maze {
     *          3. Remove the wall between the current cell and the chosen cell.
     *          4. Mark the chosen cell as visited and push it to the stack.
     */
-   * generator(row, column) {
-       // Bounds checking for the given starting index.
-       let index = new GridIndex(row, column);
-       if (!this.validCellIndex(index)) { throw RangeError ('Starting index out of range.'); }
-   
-       // (1) Choose the initial cell, mark it as visited and push it to the stack.
-       let stack = [];
-       let initialCell = this.cells[index.row][index.column];
-       initialCell.visited = true;
-       stack.push(initialCell);
-       yield initialCell;
-   
-       // (2) While the stack is not empty:
-       while (stack.length > 0) {
-   
-           // (3) Pop a cell from the stack and make it a current cell.
-           let currentCell = stack.pop();
-   
-           // (4) If the current cell has any neighbours which have not been visited:
-           let neighbors = this.getUnvisitedCells(currentCell.getNeighborIndices());
-   
-           if (neighbors.length > 0) {
-   
-               // (5) Push the current cell to the stack.
-               stack.push(currentCell);
-   
-               // (6) Choose one of the unvisited neighbours.
-               let i = Math.floor(Math.random() * neighbors.length);
-               let nextCell = neighbors[i][0];
-               let wall = neighbors[i][1];
-               
-               // (7) Remove the wall between the current cell and the chosen cell.
-               nextCell.toggleOpposite(wall, false);
-               
-               // (8) Mark the chosen cell as visited and push it to the stack.
-               nextCell.visited = true;
-               stack.push(nextCell);
-   
-               yield nextCell;
-           }
-       }
+    generate(row, column) {
+
+        // Bounds checking for the given starting index.
+        let index = new GridIndex(row, column);
+        if (!this.validCellIndex(index)) { 
+            throw RangeError ('Starting index out of range.'); 
+        }
+
+        this.generated = [];
+
+        // (1) Choose the initial cell, mark it as visited and push it to the stack.
+        let stack = [];
+        let initialCell = this.cells[index.row][index.column];
+        initialCell.visited = true;
+        initialCell.setWalls(false);
+        stack.push(initialCell);
+
+        // (2) While the stack is not empty:
+        while (stack.length > 0) {
+        
+            // (3) Pop a cell from the stack and make it a current cell.
+            let currentCell = stack.pop();
+
+            // (4) If the current cell has any neighbours which have not been visited:
+            let neighbors = this.getUnvisitedCells(currentCell.getNeighborIndices());
+    
+            if (neighbors.length > 0) {
+                // (5) Choose one of the unvisited neighbours.
+                let i = Math.floor(Math.random() * neighbors.length);
+                let nextCell = neighbors[i][0];
+                let wall = neighbors[i][1];
+                
+                // (6) Remove the wall between the current cell and the chosen cell.
+                currentCell.toggleWall(wall, false);
+                nextCell.toggleOpposite(wall, false);
+                
+                // (7) Push the current cell to the stack.
+                // We do this later instead of earlier as we want to toggle the wall before pushing to the stack.
+                stack.push(currentCell);
+
+                // (8) Mark the chosen cell as visited and push it to the stack.
+                nextCell.visited = true;
+                stack.push(nextCell);
+                this.generated.push(nextCell);
+            }
+        }
+        return this.generated;
    }
 }
 

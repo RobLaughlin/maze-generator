@@ -58,7 +58,7 @@ class Box {
             case 'UP'       :   this.up.toggle(enable);    break;
             case 'RIGHT'    :   this.right.toggle(enable); break;
             case 'DOWN'     :   this.down.toggle(enable);  break;
-            default         :                               break;
+            default         :                              break;
         }
     }
 
@@ -75,7 +75,7 @@ class Box {
             case 'UP'       :   this.down.toggle(enable);      break;
             case 'RIGHT'    :   this.left.toggle(enable);      break;
             case 'DOWN'     :   this.up.toggle(enable);        break;
-            default         :                                   break;
+            default         :                                  break;
         }
     }
 
@@ -83,7 +83,12 @@ class Box {
      * Sets all of the walls either on or off.
      * @param {boolean} enable - To toggle on or off.
      */
-    setWalls(enable) { this.left = this.up = this.right = this.down = enable; }
+    setWalls(enable) {
+        this.left.toggle(enable);
+        this.up.toggle(enable);
+        this.right.toggle(enable);
+        this.down.toggle(enable);
+    }
 }
 
 /**

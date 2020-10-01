@@ -32,32 +32,35 @@
         let cnv = createCanvas(800, 800);
         cnv.parent('canvasContainer');
 
-        maze = new Maze(50, 50);
-        mGen = maze.generator(0, 0);
+        maze = new Maze(10, 10);
+        data = maze.generate(0, 0);
+        dataLen = data.length;
+        cellIndex = 0;
     }
 
     function draw() {
-        let generated = mGen.next();
-        let cell = generated.value;
-        if (!generated.done) {
-            let swcX = 20 * cell.index.row;
-            let swcY = 20 * (40 - cell.index.column)
-
-            if (cell.down) {
-                line(swcX, swcY, swcX + 20, swcY)
+        if (cellIndex < dataLen) {
+            let cell = data[cellIndex];
+            let swcX = 80 * cell.index.row;
+            let swcY = 80 * (10 - cell.index.column)
+            
+            if (cell.down.enabled) {
+                line(swcX, swcY, swcX + 80, swcY)
             }
 
-            if (cell.left) {
-                line(swcX, swcY, swcX, swcY + 20)
+            if (cell.left.enabled) {
+                line(swcX, swcY, swcX, swcY - 80)
             }
 
-            if (cell.up) {
-                line(swcX, swcY + 20, swcX + 20, swcY + 20)
+            if (cell.up.enabled) {
+                line(swcX, swcY - 80, swcX + 80, swcY - 80)
             } 
             
-            if (cell.right) {
-                line(swcX + 20, swcY, swcX + 20, swcY + 20)
-            }     
+            if (cell.right.enabled) {
+                line(swcX + 80, swcY, swcX + 80, swcY - 80)
+            } 
+
+            cellIndex += 1;
         }
     }
     /*
@@ -73,7 +76,7 @@
             if (!generated.done) {
                 var box = new createjs.Rect();
                 box.beginStroke("Green");
-                box.drawRect(20 * cell.index.row, 20 * (40 - cell.index.column), 20, 20);
+                box.drawRect(80 * cell.index.row, 80 * (40 - cell.index.column), 80, 80);
                 stage.update();
             }
         }
