@@ -32,9 +32,19 @@ class Maze {
             ))
         );
 
-        /** @property {Array.Cell[]} cells 2D Array of [Cells]{@link Cell} with the previously generated maze.*/
-        this.generated = [];
+        this._generated = [];
     }
+
+    /** 
+     * 2D Array of [Cells]{@link Cell} with the previously generated maze.
+     * @type {Array.Cell[]} 
+    */
+
+    /**
+     * 2D Array of [Cells]{@link Cell} containing previously generated maze data. Array is empty if no data has been generated.
+     * @type {Array.Cell[]} 
+     */
+    get generated() { return this._generated; }
 
     /**
      * Determines whether a given 2D [Index]{@link GridIndex} is out of range in the cells array.
@@ -134,15 +144,15 @@ class Maze {
                 // (8) Mark the chosen cell as visited and push it to the stack.
                 nextCell.visited = true;
                 stack.push(nextCell);
-                this.generated.push(nextCell);
+                this._generated.push(nextCell);
             }
         }
-        return this.generated;
+        return this._generated;
    }
 
    /** Reset the maze. */
    reset() {
-       this.generated = [];
+       this._generated = [];
    }
 }
 
