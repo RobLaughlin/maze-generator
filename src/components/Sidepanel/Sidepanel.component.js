@@ -6,7 +6,6 @@ function Sidepanel() {
     return (
         <Container id="sidepanel">
             <Title>Maze Creator</Title>
-            <hr />
             <Creation />
         </Container>
     );

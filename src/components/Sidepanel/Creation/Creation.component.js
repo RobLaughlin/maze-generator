@@ -7,14 +7,17 @@ class Creation extends React.Component {
     render() {
         return (
             <div>
-                <div className="row mb-3">
-                    <Form.Label className="col-3 ml-3 mt-2 mr-2">Entrance:</Form.Label>
-                    <Select type="text" className="col-7 rounded" as="select">
-                        <option>Left</option>
-                        <option>Right</option>
-                        <option>Top</option>
-                        <option>Bottom</option>
-                    </Select>
+                <hr />
+                <div className="row mb-2">
+                    <div className="m-auto w-100">
+                        <Form.Label className="ml-5">Entrance:</Form.Label>
+                        <Select type="text" className="ml-4 w-50 rounded pl-1 pt-1 pb-1" as="select">
+                            <option>Left</option>
+                            <option>Right</option>
+                            <option>Top</option>
+                            <option>Bottom</option>
+                        </Select>
+                    </div>
                 </div>
                 <div className="row mb-3">
                     <Button variant="dark" className="col-4 m-auto">Generate</Button>
