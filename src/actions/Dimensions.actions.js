@@ -26,11 +26,16 @@ export function changeHeight(height, max, min) {
     }
 }
 
-export function changeDensity(density) {
+export function changeDensity(density, max, min) {
     return {
         type: ACTIONS.UPDATE_DENSITY,
         payload: {
-            density: density
+            density: {
+                val: density,
+                max: max,
+                min: min
+            }
+
         }
     }
 }

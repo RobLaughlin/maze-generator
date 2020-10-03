@@ -7,7 +7,6 @@ import Download from './Download/Download.component';
 
 class Sidepanel extends React.Component {
     render() {
-        console.log(this.props);
         return (
             <Container id="sidepanel">
                 <Title>Maze Creator</Title>

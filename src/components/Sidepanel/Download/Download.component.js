@@ -12,9 +12,8 @@ class Download extends React.Component {
                         <option>*.PNG</option>
                         <option>*.PNG With Solution</option>
                     </Form.Control>
-                    <Button variant="dark" className="col-10 ml-auto mr-auto mt-3">Download</Button>
+                    <Button variant="dark" className="col-10 ml-auto mr-auto mt-3 mb-3">Download</Button>
                 </div>
-                <hr />
             </div>
         );
     }

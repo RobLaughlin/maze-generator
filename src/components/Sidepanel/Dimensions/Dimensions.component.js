@@ -18,7 +18,7 @@ class Dimensions extends React.Component {
                 <div className="row mt-3 mr-1 ml-1">
                     <Form.Label className="col-4 ml-2 mt-1">Width:</Form.Label>
                     <Form.Control className="col-7 mr-3" type="range" 
-                        onChange={(e) => { this.widthChanged(e, document.body.clientWidth) }}
+                        onChange={this.widthChanged}
                         min={this.props.width.min.toString()} 
                         max={this.props.width.max.toString()} 
                         value={this.props.width.val.toString()}
@@ -27,7 +27,7 @@ class Dimensions extends React.Component {
                 <div className="row mr-1 ml-1">
                     <Form.Label className="col-4 ml-2 mt-1">Height:</Form.Label>
                     <Form.Control className="col-7 mr-3" type="range" 
-                        onChange={(e) => { this.heightChanged(e, document.body.clientHeight) }}
+                        onChange={this.heightChanged}
                         min={this.props.height.min.toString()} 
                         max={this.props.height.max.toString()} 
                         value={this.props.height.val.toString()}
@@ -35,24 +35,21 @@ class Dimensions extends React.Component {
                 </div>
                 <div className="row mr-1 ml-1">
                     <Form.Label className="col-4 ml-2 mt-1">Density:</Form.Label>
-                    <Form.Control className="col-7 mr-3" type="range" step="10" min="20" max="200" onChange={this.densityChanged} />
+                    <Form.Control className="col-7 mr-3" type="range" step="10" 
+                        onChange={this.densityChanged} 
+                        min={this.props.density.min.toString()} 
+                        max={this.props.density.max.toString()} 
+                        value={this.props.density.val.toString()}
+                    />
                 </div>
                 <hr />
             </div>
         );
     }
 
-    widthChanged(e, width) {
-        this.props.setWidth(e.target.value, this.props.width.max, this.props.width.min);
-    }
-
-    heightChanged(e, height) {
-        this.props.setHeight(e.target.value, this.props.height.max, this.props.height.min);
-    }
-
-    densityChanged(e) {
-        this.props.setDensity(e.target.value);
-    }
+    widthChanged(e) { this.props.setWidth(Math.floor(e.target.value /this.props.density.min) * this.props.density.min) }
+    heightChanged(e) { this.props.setHeight(Math.floor(e.target.value /this.props.density.min) * this.props.density.min) }
+    densityChanged(e) { this.props.setDensity(Math.floor(e.target.value /this.props.density.min) * this.props.density.min) }
 }
 
 const mapStateToProps = function(state) {
@@ -65,9 +62,9 @@ const mapStateToProps = function(state) {
 
 const mapDispatchToProps = function(dispatch) {
     return {
-        setWidth    : (width, max, min)     => { dispatch(changeWidth(width, max, min)) },
-        setHeight   : (height, max, min)    => { dispatch(changeHeight(height, max, min)) },
-        setDensity  : (density)             => { dispatch(changeDensity(density)) }
+        setWidth    : (width)       => { dispatch(changeWidth(width)) },
+        setHeight   : (height)      => { dispatch(changeHeight(height)) },
+        setDensity  : (density)     => { dispatch(changeDensity(density)) }
     }
 };
 

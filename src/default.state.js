@@ -1,16 +1,20 @@
 const DefaultState = {
     dimensions: {
         width: {
-            max: 100,
+            max: 300,
             min: 50,
             val: 100
         },
         height: {
-            max: 100,
+            max: 300,
             min: 50,
             val: 100
         },
-        density: 100
+        density: {
+            max: 200,
+            min: 20,
+            val: 100
+        }
     }
 };
 
