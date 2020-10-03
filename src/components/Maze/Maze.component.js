@@ -14,7 +14,7 @@ class Maze extends React.Component {
 
     render() {
         return(
-            <div className="w-100 d-flex" ref={this.mazeTopContainer}>
+            <div className="w-100 d-flex border-bottom border-dark" ref={this.mazeTopContainer}>
                 <MediaQuery minWidth={this.props.MIN_WIDTH}>
                     <Container id="mazeContainer" ref={this.mazeContainer} style={{
                         width: this.props.width.val.toString() + 'px',
@@ -30,7 +30,6 @@ class Maze extends React.Component {
                     </Container>
                 </MediaQuery>
             </div>
-
         );
     }
 
