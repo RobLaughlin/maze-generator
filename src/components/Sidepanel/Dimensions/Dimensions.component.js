@@ -6,7 +6,6 @@ import { changeWidth, changeHeight, changeDensity } from '../../../actions/Dimen
 class Dimensions extends React.Component {
     constructor(props) {
         super(props);
-        this.windowResized = this.windowResized.bind(this);
         this.widthChanged = this.widthChanged.bind(this);
         this.heightChanged = this.heightChanged.bind(this);
         this.densityChanged = this.densityChanged.bind(this);
@@ -43,32 +42,16 @@ class Dimensions extends React.Component {
         );
     }
 
-    componentDidMount() {
-        window.addEventListener('resize', this.windowResized);
-        this.windowResized();
-    }
-
-    componentWillUnmount() {
-        window.removeEventListener('resize', this.windowResized);
-    }
-
     widthChanged(e, width) {
-        this.props.setWidth(e.target.value, width - 380, 50);
+        this.props.setWidth(e.target.value, this.props.width.max, this.props.width.min);
     }
 
     heightChanged(e, height) {
-        this.props.setHeight(e.target.value, height - 80, 50);
+        this.props.setHeight(e.target.value, this.props.height.max, this.props.height.min);
     }
 
     densityChanged(e) {
         this.props.setDensity(e.target.value);
-    }
-
-    windowResized() {
-        const width = document.body.clientWidth;
-        const height = document.body.clientHeight;
-        this.props.setWidth(width - 380, width - 380, 50);
-        this.props.setHeight(height - 80, height - 80, 50);
     }
 }
 
