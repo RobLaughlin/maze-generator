@@ -5,11 +5,6 @@ import { changeWidth, changeHeight } from '../../actions/Dimensions.actions';
 import MediaQuery from 'react-responsive';
 
 class Maze extends React.Component {
-    static PAD = {
-        X: 20,
-        Y: 20
-    };
-
     constructor(props) {
         super(props);
         this.windowResized = this.windowResized.bind(this);
@@ -49,8 +44,8 @@ class Maze extends React.Component {
     }
 
     windowResized() {
-        const padX = (Maze.PAD.X * 2);
-        const padY = (Maze.PAD.Y * 2);
+        const padX = (this.props.PAD_X * 2);
+        const padY = (this.props.PAD_Y * 2);
         const width = this.mazeTopContainer.current.clientWidth;
         const height = this.mazeTopContainer.current.clientHeight;
         const newWidth = Math.floor((width - padX) / this.props.density.min) * this.props.density.min
@@ -67,7 +62,9 @@ const mapStateToProps = function(state) {
         height: state.dimensions.height,
         density: state.dimensions.density,
         MIN_WIDTH: state.CONSTANTS.MIN_WIDTH,
-        MAX_WIDTH: state.CONSTANTS.MAX_WIDTH
+        MAX_WIDTH: state.CONSTANTS.MAX_WIDTH,
+        PAD_X: state.CONSTANTS.MAZE_PAD.X,
+        PAD_Y: state.CONSTANTS.MAZE_PAD.Y,
     }
 };
 

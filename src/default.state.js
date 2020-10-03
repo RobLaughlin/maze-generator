@@ -1,7 +1,11 @@
 const DefaultState = {
     CONSTANTS: {
         MIN_WIDTH: 600,
-        MAX_WIDTH: 599
+        MAX_WIDTH: 599,
+        MAZE_PAD: {
+            X: 20,
+            Y: 20
+        }
     },
 
     dimensions: {
