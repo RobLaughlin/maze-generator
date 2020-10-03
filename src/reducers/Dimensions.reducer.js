@@ -2,7 +2,7 @@ import * as ACTIONS from '../actions/Dimensions.types';
 import produce from 'immer';
 import DefaultState from '../default.state';
 
-export const dimensionReducer = function(state = DefaultState, action) {
+export const dimensionReducer = function(state = DefaultState.dimensions, action) {
     switch (action.type) {
         case ACTIONS.UPDATE_WIDTH:
             return produce(state, newState => { 
