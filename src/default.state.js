@@ -1,4 +1,9 @@
 const DefaultState = {
+    CONSTANTS: {
+        MIN_WIDTH: 600,
+        MAX_WIDTH: 599
+    },
+
     dimensions: {
         width: {
             max: 300,

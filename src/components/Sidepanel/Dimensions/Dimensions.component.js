@@ -2,6 +2,7 @@ import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { connect } from 'react-redux';
 import { changeWidth, changeHeight, changeDensity } from '../../../actions/Dimensions.actions';
+import MediaQuery from 'react-responsive';
 
 class Dimensions extends React.Component {
     constructor(props) {
@@ -14,25 +15,30 @@ class Dimensions extends React.Component {
     render() {
         return(
             <div>
-                <h4 className="m-auto text-center font-weight-light">Dimensions &amp; Density</h4>
-                <div className="row mt-3 mr-1 ml-1">
-                    <Form.Label className="col-4 ml-2 mt-1">Width:</Form.Label>
-                    <Form.Control className="col-7 mr-3" type="range" 
-                        onChange={this.widthChanged}
-                        min={this.props.width.min.toString()} 
-                        max={this.props.width.max.toString()} 
-                        value={this.props.width.val.toString()}
-                    />
-                </div>
-                <div className="row mr-1 ml-1">
-                    <Form.Label className="col-4 ml-2 mt-1">Height:</Form.Label>
-                    <Form.Control className="col-7 mr-3" type="range" 
-                        onChange={this.heightChanged}
-                        min={this.props.height.min.toString()} 
-                        max={this.props.height.max.toString()} 
-                        value={this.props.height.val.toString()}
-                    />
-                </div>
+                <MediaQuery maxWidth={this.props.MAX_WIDTH}>
+                    <h4 className="mt-auto ml-auto mr-auto mb-3 text-center font-weight-light">Density</h4>
+                </MediaQuery>
+                <MediaQuery minWidth={this.props.MIN_WIDTH}>
+                    <h4 className="m-auto text-center font-weight-light">Dimensions &amp; Density</h4>
+                    <div className="row mt-3 mr-1 ml-1">
+                        <Form.Label className="col-4 ml-2 mt-1">Width:</Form.Label>
+                        <Form.Control className="col-7 mr-3" type="range" 
+                            onChange={this.widthChanged}
+                            min={this.props.width.min.toString()} 
+                            max={this.props.width.max.toString()} 
+                            value={this.props.width.val.toString()}
+                        />
+                    </div>
+                    <div className="row mr-1 ml-1">
+                        <Form.Label className="col-4 ml-2 mt-1">Height:</Form.Label>
+                        <Form.Control className="col-7 mr-3" type="range" 
+                            onChange={this.heightChanged}
+                            min={this.props.height.min.toString()} 
+                            max={this.props.height.max.toString()} 
+                            value={this.props.height.val.toString()}
+                        />
+                    </div>
+                </MediaQuery>
                 <div className="row mr-1 ml-1">
                     <Form.Label className="col-4 ml-2 mt-1">Density:</Form.Label>
                     <Form.Control className="col-7 mr-3" type="range" step="10" 
@@ -56,7 +62,9 @@ const mapStateToProps = function(state) {
     return {
         width: state.dimensions.width,
         height: state.dimensions.height,
-        density: state.dimensions.density
+        density: state.dimensions.density,
+        MIN_WIDTH: state.CONSTANTS.MIN_WIDTH,
+        MAX_WIDTH: state.CONSTANTS.MAX_WIDTH,
     }
 };
 

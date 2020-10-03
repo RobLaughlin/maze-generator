@@ -20,14 +20,14 @@ class Maze extends React.Component {
     render() {
         return(
             <div className="w-100 d-flex" ref={this.mazeTopContainer}>
-                <MediaQuery minWidth={600}>
+                <MediaQuery minWidth={this.props.MIN_WIDTH}>
                     <Container id="mazeContainer" ref={this.mazeContainer} style={{
                         width: this.props.width.val.toString() + 'px',
                         height: this.props.height.val.toString() + 'px'
                     }}>
                     </Container>
                 </MediaQuery>
-                <MediaQuery maxWidth={599}>
+                <MediaQuery maxWidth={this.props.MAX_WIDTH}>
                     <Container className="mt-3" id="mazeContainer" ref={this.mazeContainer} style={{
                         width: this.props.width.val.toString() + 'px',
                         height: this.props.width.val.toString() + 'px'
@@ -65,7 +65,9 @@ const mapStateToProps = function(state) {
     return {
         width: state.dimensions.width,
         height: state.dimensions.height,
-        density: state.dimensions.density
+        density: state.dimensions.density,
+        MIN_WIDTH: state.CONSTANTS.MIN_WIDTH,
+        MAX_WIDTH: state.CONSTANTS.MAX_WIDTH
     }
 };
 
