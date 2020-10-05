@@ -39,3 +39,16 @@ export function changeDensity(density, max, min) {
         }
     }
 }
+
+export function setMazeDims(width, height) {
+    return {
+        type: ACTIONS.UPDATE_MAZE_DIMS,
+        payload: {
+            mazeDims: {
+                width: width,
+                height: height
+            }
+
+        }
+    }
+}

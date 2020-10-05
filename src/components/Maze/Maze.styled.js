@@ -1,9 +1,9 @@
 import styled from 'styled-components';
 
-const Container = styled.div`
-    border: 2px solid black;
+const Canvas = styled.canvas`
     margin: auto;
     min-width: 100px;
+    border: 1px solid black;
 `;
 
-export { Container };
+export { Canvas };

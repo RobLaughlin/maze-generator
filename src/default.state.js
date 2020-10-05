@@ -2,27 +2,27 @@ const DefaultState = {
     CONSTANTS: {
         MIN_WIDTH: 600,
         MAX_WIDTH: 599,
-        MAZE_PAD: {
-            X: 20,
-            Y: 20
-        }
     },
 
     dimensions: {
         width: {
-            max: 300,
-            min: 50,
-            val: 100
+            max: 3,
+            min: 1,
+            val: 2
         },
         height: {
-            max: 300,
-            min: 50,
-            val: 100
+            max: 3,
+            min: 1,
+            val: 2
         },
         density: {
-            max: 200,
-            min: 20,
-            val: 100
+            max: 100,
+            min: 10,
+            val: 50
+        },
+        mazeDims: {
+            width: 20,
+            height: 20
         }
     }
 };

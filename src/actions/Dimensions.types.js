@@ -1,3 +1,4 @@
 export const UPDATE_WIDTH = 'UPDATE_WIDTH';
 export const UPDATE_HEIGHT = 'UPDATE_HEIGHT';
 export const UPDATE_DENSITY = 'UPDATE_DENSITY';
+export const UPDATE_MAZE_DIMS = 'UPDATE_MAZE_DIMS';

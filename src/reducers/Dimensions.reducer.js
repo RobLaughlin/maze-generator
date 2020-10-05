@@ -22,6 +22,11 @@ export const dimensionReducer = function(state = DefaultState.dimensions, action
                 newState.density.max = (action.payload.density.max !== undefined) ? action.payload.density.max : newState.density.max;
                 newState.density.min = (action.payload.density.min !== undefined) ? action.payload.density.min : newState.density.min;
             });
+        case ACTIONS.UPDATE_MAZE_DIMS:
+            return produce(state, newState => {
+                newState.mazeDims.width = action.payload.mazeDims.width;
+                newState.mazeDims.height = action.payload.mazeDims.height;
+            });
         default:
             return state;
     }
