@@ -57,12 +57,15 @@ class Maze extends React.Component {
         window.removeEventListener('resize', this.windowResized);
     }
 
-    mClicked(cnv, width, height, density) {
+    mClicked(canvas, width, height, density) {
         var m = new maze(width, height);
-        var generated = m.generate(0, 0);
+        var generated = m.generate(1, 1);
 
-        var ctx = cnv.current.getContext('2d');
-        ctx.clearRect(0, 0, cnv.current.width, cnv.current.height);
+        var ctx = canvas.current.getContext('2d');
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, canvas.current.width, canvas.current.height);
+        ctx.beginPath();
+
         ctx.strokeStyle = 'black';
         ctx.fillStyle = 'black';
 

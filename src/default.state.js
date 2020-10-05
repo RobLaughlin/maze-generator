@@ -17,7 +17,7 @@ const DefaultState = {
         },
         density: {
             max: 100,
-            min: 10,
+            min: 20,
             val: 50
         },
         mazeDims: {
