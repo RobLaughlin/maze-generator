@@ -96,7 +96,7 @@ class Maze {
     * @param {int} startColumn - Starting column index of the maze.
     * @param {int} endRow - End row index of the maze.
     * @param {int} endColumn - End column index of the maze.
-    * @returns {Array.Cell[]} The generated maze data.
+    * @returns {(Array.Cell[]|Array.Cell[])Array} The generated maze data and the solution data, respectively.
     * The first cell is always the cell chosen by index at (row, column).
     * 
     * @example
@@ -163,11 +163,11 @@ class Maze {
                 
                 // Set the solved path
                 if (nextCell.index.row === endIndex.row && nextCell.index.column === endIndex.column) {
-                    this._solution = this._generated.slice();
+                    this._solution = stack.slice();
                 }
             }
         }
-        return this._generated;
+        return [this.generated, this.solution];
    }
 
    /** Reset the maze. */

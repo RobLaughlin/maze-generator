@@ -58,8 +58,10 @@ class Maze extends React.Component {
     }
 
     mClicked(canvas, width, height, density) {
-        var m = new maze(width, height);
-        var generated = m.generate(0, 0, 1, 1);
+        const m = new maze(width, height);
+        const data = m.generate(0, 0, width - 1, 0);
+        const generated = data[0];
+        const solution = data[1];
 
         var ctx = canvas.current.getContext('2d');
         ctx.fillStyle = 'white';
@@ -67,7 +69,7 @@ class Maze extends React.Component {
         ctx.beginPath();
 
         ctx.strokeStyle = 'black';
-        ctx.fillStyle = 'black';
+        ctx.fillStyle = 'green';
 
         generated.forEach(cell => {
             let swcX = density * cell.index.row;
@@ -97,6 +99,13 @@ class Maze extends React.Component {
                 ctx.stroke();
             }
             
+        });
+        
+        solution.forEach(cell => {
+            let nwcX = density * cell.index.row;
+            let nwcY = density * (this.props.height.val - cell.index.column - 1)
+
+            ctx.fillRect(nwcX, nwcY, density / 2, density/ 2);
         });
     }
 
