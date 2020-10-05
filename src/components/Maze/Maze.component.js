@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { changeWidth, changeHeight, setMazeDims } from '../../actions/Dimensions.actions';
 import MediaQuery from 'react-responsive';
 import maze from '../../modules/maze/Maze';
+import GridIndex from '../../modules/maze/GridIndex';
 
 class Maze extends React.Component {
     static PAD = {
@@ -66,47 +67,85 @@ class Maze extends React.Component {
         var ctx = canvas.current.getContext('2d');
         ctx.fillStyle = 'white';
         ctx.fillRect(0, 0, canvas.current.width, canvas.current.height);
+
         ctx.beginPath();
-
         ctx.strokeStyle = 'black';
-        ctx.fillStyle = 'green';
 
-        generated.forEach(cell => {
-            let swcX = density * cell.index.row;
-            let swcY = density * (this.props.height.val - cell.index.column)
-            
-            if (cell.down.enabled) {
-                ctx.moveTo(swcX, swcY);
-                ctx.lineTo(swcX + density, swcY);
-                ctx.stroke();
+        for (const row in generated){
+            for (const column in generated[row]) {
+                let cell = generated[row][column];
+                let swcX = density * cell.index.row;
+                let swcY = density * (this.props.height.val - cell.index.column);
+                
+                if (cell.down.enabled) {
+                    ctx.moveTo(swcX, swcY);
+                    ctx.lineTo(swcX + density, swcY);
+                    ctx.stroke();
+                }
+    
+                if (cell.left.enabled) {
+                    ctx.moveTo(swcX, swcY);
+                    ctx.lineTo(swcX, swcY - density);
+                    ctx.stroke();
+                }
+    
+                if (cell.up.enabled) {
+                    ctx.moveTo(swcX, swcY - density);
+                    ctx.lineTo(swcX + density, swcY - density);
+                    ctx.stroke();
+                } 
+                
+                if (cell.right.enabled) {
+                    ctx.moveTo(swcX + density, swcY);
+                    ctx.lineTo(swcX + density, swcY - density);
+                    ctx.stroke();
+                }
             }
+        }
 
-            if (cell.left.enabled) {
-                ctx.moveTo(swcX, swcY);
-                ctx.lineTo(swcX, swcY - density);
-                ctx.stroke();
-            }
-
-            if (cell.up.enabled) {
-                ctx.moveTo(swcX, swcY - density);
-                ctx.lineTo(swcX + density, swcY - density);
-                ctx.stroke();
-            } 
-            
-            if (cell.right.enabled) {
-                ctx.moveTo(swcX + density, swcY);
-                ctx.lineTo(swcX + density, swcY - density);
-                ctx.stroke();
-            }
-            
-        });
+        ctx.closePath();
         
-        solution.forEach(cell => {
-            let nwcX = density * cell.index.row;
-            let nwcY = density * (this.props.height.val - cell.index.column - 1)
+        ctx.beginPath();
+        ctx.strokeStyle = 'green';
 
-            ctx.fillRect(nwcX, nwcY, density / 2, density/ 2);
-        });
+        for (const row in solution) {
+            for (const column in solution[row]) {
+                let cell = solution[row][column];
+                let cenX = (density * cell.index.row) + (density / 2);
+                let cenY = (density * (this.props.height.val - cell.index.column)) - (density / 2);
+
+                let south = new GridIndex(cell.index.row, cell.index.column - 1);
+                let west = new GridIndex(cell.index.row - 1, cell.index.column);
+                let north = new GridIndex(cell.index.row, cell.index.column + 1);
+                let east = new GridIndex(cell.index.row + 1, cell.index.column);
+
+                if (!cell.down.enabled && m.validCellIndex(south) && 'solved' in generated[south.row][south.column]) {
+                    ctx.moveTo(cenX, cenY);
+                    ctx.lineTo(cenX, cenY + (density / 2));
+                    ctx.stroke();
+                }
+                
+                if (!cell.left.enabled && m.validCellIndex(west) && 'solved' in generated[west.row][west.column]) {
+                    ctx.moveTo(cenX, cenY);
+                    ctx.lineTo(cenX - (density / 2), cenY);
+                    ctx.stroke();
+                }
+    
+                if (!cell.up.enabled && m.validCellIndex(north) && 'solved' in generated[north.row][north.column]) {
+                    ctx.moveTo(cenX, cenY);
+                    ctx.lineTo(cenX, cenY - (density / 2));
+                    ctx.stroke();
+                } 
+                
+                if (!cell.right.enabled && m.validCellIndex(east) && 'solved' in generated[east.row][east.column]) {
+                    ctx.moveTo(cenX, cenY);
+                    ctx.lineTo(cenX + (density / 2), cenY);
+                    ctx.stroke();
+                }
+            }
+        }
+        ctx.closePath();
+        
     }
 
     windowResized() {

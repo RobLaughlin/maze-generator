@@ -26,27 +26,23 @@ class Maze {
         /** @property {int} columns Maximum number of columns in the maze. */
         this.columns = columns;
 
-        /** @property {Array.Cell[]} cells 2D Array of [Cells]{@link Cell} */
-        this.cells = Array.from({length: rows}, (_, r) =>
-            Array.from({length: columns}, (_, c) => (
-                new Cell(new GridIndex(r, c))
-            ))
-        );
+        this._cells = {};
+        for (let r = 0; r < this.rows; r++) {
+            this._cells[r] = {};
+            for (let c = 0; c < this.columns; c++) {
+                this._cells[r][c] = new Cell(new GridIndex(r, c));
+            }
+        }
 
-        this._generated = [];
         this._solution = [];
     }
 
-    /** 
-     * 2D Array of [Cells]{@link Cell} with the previously generated maze.
-     * @type {Array.Cell[]} 
-    */
 
     /**
      * 2D Array of [Cells]{@link Cell} containing previously generated maze data. Array is empty if no data has been generated.
      * @type {Array.Cell[]} 
      */
-    get generated() { return produce(this._generated, _ => {}); }
+    get generated() { return produce(this._cells, _ => {}); }
 
     /**
      * 2D Array of [Cells]{@link Cell} containing the solved maze data. Array is empty if no data has been generated.
@@ -81,7 +77,7 @@ class Maze {
 
         indices.forEach((i, wall) => {
             if (this.validCellIndex(i)) {
-                let cell = this.cells[i.row][i.column];
+                let cell = this._cells[i.row][i.column];
                 if (!cell.visited) { neighbors.push([cell, wall]); }
             }
         });
@@ -128,7 +124,8 @@ class Maze {
 
         // (1) Choose the initial cell, mark it as visited and push it to the stack.
         let stack = [];
-        let initialCell = this.cells[index.row][index.column];
+        let initialCell = this._cells[index.row][index.column];
+        
         initialCell.visited = true;
         initialCell.setWalls(false);
         stack.push(initialCell);
@@ -143,6 +140,7 @@ class Maze {
             let neighbors = this.getUnvisitedCells(currentCell.getNeighborIndices());
     
             if (neighbors.length > 0) {
+
                 // (5) Choose one of the unvisited neighbours.
                 let i = Math.floor(Math.random() * neighbors.length);
                 let nextCell = neighbors[i][0];
@@ -159,21 +157,43 @@ class Maze {
                 // (8) Mark the chosen cell as visited and push it to the stack.
                 nextCell.visited = true;
                 stack.push(nextCell);
-                this._generated.push(nextCell);
+                this._cells[nextCell.index.row][nextCell.index.column] = nextCell
                 
                 // Set the solved path
                 if (nextCell.index.row === endIndex.row && nextCell.index.column === endIndex.column) {
-                    this._solution = stack.slice();
+                    stack.forEach(cell => {
+                        let r = cell.index.row;
+                        let c = cell.index.column;
+                        cell.solved = true;
+
+                        if (r in this._solution) {
+                            this._solution[r][c] = cell;
+                        }
+                        else {
+                            this._solution[r] = { c: cell }
+                        }
+
+                    });
                 }
             }
         }
+
         return [this.generated, this.solution];
    }
 
    /** Reset the maze. */
    reset() {
-       this._generated = [];
+        this._cells = {};
+        this._solution = {};
+
+        for (let r = 0; r < this.rows; r++) {
+            this._cells[r] = {};
+            for (let c = 0; c < this.columns; c++) {
+                this._cells[r][c] = new Cell(new GridIndex(r, c));
+            }
+        }
    }
+
 }
 
 export default Maze;
