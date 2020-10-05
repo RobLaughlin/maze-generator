@@ -31,14 +31,14 @@ class Maze {
 
 
     /**
-     * 2D Array of [Cells]{@link Cell} containing previously generated maze data. Array is empty if no data has been generated.
-     * @type {Array.Cell[]} 
+     * 2D Mapping of [Cells]{@link Cell} containing previously generated maze data. Keyed by [row][column].
+     * @type {Object} 
      */
     get generated() { return produce(this._cells, _ => {}); }
 
     /**
-     * 2D Array of [Cells]{@link Cell} containing the solved maze data. Array is empty if no data has been generated.
-     * @type {Array.Cell[]} 
+     * 2D Mapping of [Cells]{@link Cell} containing the solved maze data. Keyed by [row][column].
+     * @type {Object} 
      */
     get solution() { return produce(this._solution, _ => {}); }
 
@@ -84,7 +84,7 @@ class Maze {
     * @param {int} startColumn - Starting column index of the maze.
     * @param {int} endRow - End row index of the maze.
     * @param {int} endColumn - End column index of the maze.
-    * @returns {(Array.Cell[]|Array.Cell[])Array} The generated maze data and the solution data, respectively.
+    * @returns {((Object|Object)|Array)} The generated maze data and the solution data, respectively. Both keyed by [row][column].
     * The first cell is always the cell chosen by index at (row, column).
     * 
     * @example

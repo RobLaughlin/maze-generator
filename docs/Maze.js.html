@@ -28,6 +28,7 @@
         <article>
             <pre class="prettyprint source linenums"><code>import GridIndex from "./GridIndex";
 import Cell from "./Cell";
+import { produce } from 'immer';
 
 /**
  * @module Maze
@@ -53,26 +54,21 @@ class Maze {
         /** @property {int} columns Maximum number of columns in the maze. */
         this.columns = columns;
 
-        /** @property {Array.Cell[]} cells 2D Array of [Cells]{@link Cell} */
-        this.cells = Array.from({length: rows}, (_, r) =>
-            Array.from({length: columns}, (_, c) => (
-                new Cell(new GridIndex(r, c))
-            ))
-        );
-
-        this._generated = [];
+        this.reset();
     }
 
-    /** 
-     * 2D Array of [Cells]{@link Cell} with the previously generated maze.
-     * @type {Array.Cell[]} 
-    */
 
     /**
-     * 2D Array of [Cells]{@link Cell} containing previously generated maze data. Array is empty if no data has been generated.
-     * @type {Array.Cell[]} 
+     * 2D Mapping of [Cells]{@link Cell} containing previously generated maze data. Keyed by [row][column].
+     * @type {Object} 
      */
-    get generated() { return this._generated; }
+    get generated() { return produce(this._cells, _ => {}); }
+
+    /**
+     * 2D Mapping of [Cells]{@link Cell} containing the solved maze data. Keyed by [row][column].
+     * @type {Object} 
+     */
+    get solution() { return produce(this._solution, _ => {}); }
 
     /**
      * Determines whether a given 2D [Index]{@link GridIndex} is out of range in the cells array.
@@ -101,7 +97,7 @@ class Maze {
 
         indices.forEach((i, wall) => {
             if (this.validCellIndex(i)) {
-                let cell = this.cells[i.row][i.column];
+                let cell = this._cells[i.row][i.column];
                 if (!cell.visited) { neighbors.push([cell, wall]); }
             }
         });
@@ -112,9 +108,11 @@ class Maze {
     /**
     * Main generator method for generating the maze.
     * Uses row and column instead of {@link GridIndex} to have easier implementation for consumers.
-    * @param {int} row - Starting row index of the maze.
-    * @param {int} column - Starting column index of the maze.
-    * @returns {Array.Cell[]} The generated maze data.
+    * @param {int} startRow - Starting row index of the maze.
+    * @param {int} startColumn - Starting column index of the maze.
+    * @param {int} endRow - End row index of the maze.
+    * @param {int} endColumn - End column index of the maze.
+    * @returns {((Object|Object)|Array)} The generated maze data and the solution data, respectively. Both keyed by [row][column].
     * The first cell is always the cell chosen by index at (row, column).
     * 
     * @example
@@ -128,19 +126,26 @@ class Maze {
     *          3. Remove the wall between the current cell and the chosen cell.
     *          4. Mark the chosen cell as visited and push it to the stack.
     */
-    generate(row, column) {
+    generate(startRow, startColumn, endRow, endColumn) {
 
         // Bounds checking for the given starting index.
-        let index = new GridIndex(row, column);
+        let index = new GridIndex(startRow, startColumn);
         if (!this.validCellIndex(index)) { 
             throw RangeError ('Starting index out of range.'); 
+        }
+
+        // Bounds checking for the given ending index.
+        let endIndex = new GridIndex(endRow, endColumn);
+        if (!this.validCellIndex(endIndex)) { 
+            throw RangeError ('End index out of range.'); 
         }
 
         this.reset();
 
         // (1) Choose the initial cell, mark it as visited and push it to the stack.
         let stack = [];
-        let initialCell = this.cells[index.row][index.column];
+        let initialCell = this._cells[index.row][index.column];
+        
         initialCell.visited = true;
         initialCell.setWalls(false);
         stack.push(initialCell);
@@ -155,6 +160,7 @@ class Maze {
             let neighbors = this.getUnvisitedCells(currentCell.getNeighborIndices());
     
             if (neighbors.length > 0) {
+
                 // (5) Choose one of the unvisited neighbours.
                 let i = Math.floor(Math.random() * neighbors.length);
                 let nextCell = neighbors[i][0];
@@ -171,16 +177,43 @@ class Maze {
                 // (8) Mark the chosen cell as visited and push it to the stack.
                 nextCell.visited = true;
                 stack.push(nextCell);
-                this._generated.push(nextCell);
+                this._cells[nextCell.index.row][nextCell.index.column] = nextCell
+                
+                // Set the solved path
+                if (nextCell.index.row === endIndex.row &amp;&amp; nextCell.index.column === endIndex.column) {
+                    stack.forEach(cell => {
+                        let r = cell.index.row;
+                        let c = cell.index.column;
+                        cell.solved = true;
+
+                        if (r in this._solution) {
+                            this._solution[r][c] = cell;
+                        }
+                        else {
+                            this._solution[r] = { c: cell }
+                        }
+
+                    });
+                }
             }
         }
-        return this._generated;
+
+        return [this.generated, this.solution];
    }
 
    /** Reset the maze. */
    reset() {
-       this._generated = [];
+        this._cells = {};
+        this._solution = {};
+
+        for (let r = 0; r &lt; this.rows; r++) {
+            this._cells[r] = {};
+            for (let c = 0; c &lt; this.columns; c++) {
+                this._cells[r][c] = new Cell(new GridIndex(r, c));
+            }
+        }
    }
+
 }
 
 export default Maze;</code></pre>
@@ -199,7 +232,7 @@ export default Maze;</code></pre>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu Oct 01 2020 09:43:34 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Oct 05 2020 10:30:26 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>

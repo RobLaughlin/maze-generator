@@ -100,7 +100,7 @@ can be implemented with an explicit stack, which is usually allowed to grow much
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line20">line 20</a>
+        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line21">line 21</a>
     </li></ul></dd>
     
 
@@ -147,116 +147,6 @@ can be implemented with an explicit stack, which is usually allowed to grow much
 
     
         <h3 class="subsection-title">Members</h3>
-
-        
-            
-<h4 class="name" id="cells"><span class="type-signature"></span>cells<span class="type-signature"></span></h4>
-
-
-
-
-
-
-
-
-
-
-    <h5 class="subsection-title">Properties:</h5>
-
-    
-
-<table class="props">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>cells</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Array.Cell></span>
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>2D Array of <a href="Cell.html"><code>Cells</code></a></p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-
-
-
-<dl class="details">
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <dt class="tag-source">Source:</dt>
-    <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line29">line 29</a>
-    </li></ul></dd>
-    
-
-    
-
-    
-
-    
-</dl>
-
-
-
-
-
 
         
             
@@ -352,7 +242,7 @@ can be implemented with an explicit stack, which is usually allowed to grow much
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line26">line 26</a>
+        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line27">line 27</a>
     </li></ul></dd>
     
 
@@ -370,13 +260,13 @@ can be implemented with an explicit stack, which is usually allowed to grow much
 
         
             
-<h4 class="name" id="generated"><span class="type-signature"></span>generated<span class="type-signature"> :Array.&lt;Array.Cell></span></h4>
+<h4 class="name" id="generated"><span class="type-signature"></span>generated<span class="type-signature"> :Object</span></h4>
 
 
 
 
 <div class="description">
-    <p>2D Array of <a href="Cell.html"><code>Cells</code></a> containing previously generated maze data. Array is empty if no data has been generated.</p>
+    <p>2D Mapping of <a href="Cell.html"><code>Cells</code></a> containing previously generated maze data. Keyed by [row][column].</p>
 </div>
 
 
@@ -385,7 +275,7 @@ can be implemented with an explicit stack, which is usually allowed to grow much
     <ul>
         <li>
             
-<span class="param-type">Array.&lt;Array.Cell></span>
+<span class="param-type">Object</span>
 
 
         </li>
@@ -424,7 +314,7 @@ can be implemented with an explicit stack, which is usually allowed to grow much
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line47">line 47</a>
+        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line37">line 37</a>
     </li></ul></dd>
     
 
@@ -534,7 +424,79 @@ can be implemented with an explicit stack, which is usually allowed to grow much
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line23">line 23</a>
+        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line24">line 24</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+            
+<h4 class="name" id="solution"><span class="type-signature"></span>solution<span class="type-signature"> :Object</span></h4>
+
+
+
+
+<div class="description">
+    <p>2D Mapping of <a href="Cell.html"><code>Cells</code></a> containing the solved maze data. Keyed by [row][column].</p>
+</div>
+
+
+
+    <h5>Type:</h5>
+    <ul>
+        <li>
+            
+<span class="param-type">Object</span>
+
+
+        </li>
+    </ul>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line43">line 43</a>
     </li></ul></dd>
     
 
@@ -562,7 +524,7 @@ can be implemented with an explicit stack, which is usually allowed to grow much
     
 
     
-    <h4 class="name" id="generate"><span class="type-signature"></span>generate<span class="signature">(row, column)</span><span class="type-signature"> &rarr; {Array.&lt;Array.Cell>}</span></h4>
+    <h4 class="name" id="generate"><span class="type-signature"></span>generate<span class="signature">(startRow, startColumn, endRow, endColumn)</span><span class="type-signature"> &rarr; {Object|Object|Array}</span></h4>
     
 
     
@@ -607,7 +569,7 @@ Uses row and column instead of <a href="GridIndex.html"><code>GridIndex</code></
 
         <tr>
             
-                <td class="name"><code>row</code></td>
+                <td class="name"><code>startRow</code></td>
             
 
             <td class="type">
@@ -630,7 +592,7 @@ Uses row and column instead of <a href="GridIndex.html"><code>GridIndex</code></
 
         <tr>
             
-                <td class="name"><code>column</code></td>
+                <td class="name"><code>startColumn</code></td>
             
 
             <td class="type">
@@ -647,6 +609,52 @@ Uses row and column instead of <a href="GridIndex.html"><code>GridIndex</code></
             
 
             <td class="description last"><p>Starting column index of the maze.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>endRow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>End row index of the maze.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>endColumn</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">int</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>End column index of the maze.</p></td>
         </tr>
 
     
@@ -687,7 +695,7 @@ Uses row and column instead of <a href="GridIndex.html"><code>GridIndex</code></
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line103">line 103</a>
+        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line101">line 101</a>
     </li></ul></dd>
     
 
@@ -716,7 +724,7 @@ Uses row and column instead of <a href="GridIndex.html"><code>GridIndex</code></
 
         
 <div class="param-desc">
-    <p>The generated maze data.
+    <p>The generated maze data and the solution data, respectively. Both keyed by [row][column].
 The first cell is always the cell chosen by index at (row, column).</p>
 </div>
 
@@ -728,7 +736,13 @@ The first cell is always the cell chosen by index at (row, column).</p>
     </dt>
     <dd>
         
-<span class="param-type">Array.&lt;Array.Cell></span>
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Object</span>
+|
+
+<span class="param-type">Array</span>
 
 
     </dd>
@@ -856,7 +870,7 @@ The first cell is always the cell chosen by index at (row, column).</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line71">line 71</a>
+        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line67">line 67</a>
     </li></ul></dd>
     
 
@@ -977,7 +991,7 @@ The first cell is always the cell chosen by index at (row, column).</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line153">line 153</a>
+        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line177">line 177</a>
     </li></ul></dd>
     
 
@@ -1114,7 +1128,7 @@ The first cell is always the cell chosen by index at (row, column).</p>
     
     <dt class="tag-source">Source:</dt>
     <dd class="tag-source"><ul class="dummy"><li>
-        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line54">line 54</a>
+        <a href="Maze.js.html">Maze.js</a>, <a href="Maze.js.html#line50">line 50</a>
     </li></ul></dd>
     
 
@@ -1188,7 +1202,7 @@ The first cell is always the cell chosen by index at (row, column).</p>
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Thu Oct 01 2020 09:43:34 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 3.6.6</a> on Mon Oct 05 2020 10:30:26 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
