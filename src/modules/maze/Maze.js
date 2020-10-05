@@ -1,5 +1,6 @@
 import GridIndex from "./GridIndex";
 import Cell from "./Cell";
+import { produce } from 'immer';
 
 /**
  * @module Maze
@@ -33,6 +34,7 @@ class Maze {
         );
 
         this._generated = [];
+        this._solution = [];
     }
 
     /** 
@@ -44,7 +46,13 @@ class Maze {
      * 2D Array of [Cells]{@link Cell} containing previously generated maze data. Array is empty if no data has been generated.
      * @type {Array.Cell[]} 
      */
-    get generated() { return this._generated; }
+    get generated() { return produce(this._generated, _ => {}); }
+
+    /**
+     * 2D Array of [Cells]{@link Cell} containing the solved maze data. Array is empty if no data has been generated.
+     * @type {Array.Cell[]} 
+     */
+    get solution() { return produce(this._solution, _ => {}); }
 
     /**
      * Determines whether a given 2D [Index]{@link GridIndex} is out of range in the cells array.
@@ -84,8 +92,10 @@ class Maze {
     /**
     * Main generator method for generating the maze.
     * Uses row and column instead of {@link GridIndex} to have easier implementation for consumers.
-    * @param {int} row - Starting row index of the maze.
-    * @param {int} column - Starting column index of the maze.
+    * @param {int} startRow - Starting row index of the maze.
+    * @param {int} startColumn - Starting column index of the maze.
+    * @param {int} endRow - End row index of the maze.
+    * @param {int} endColumn - End column index of the maze.
     * @returns {Array.Cell[]} The generated maze data.
     * The first cell is always the cell chosen by index at (row, column).
     * 
@@ -100,12 +110,18 @@ class Maze {
     *          3. Remove the wall between the current cell and the chosen cell.
     *          4. Mark the chosen cell as visited and push it to the stack.
     */
-    generate(row, column) {
+    generate(startRow, startColumn, endRow, endColumn) {
 
         // Bounds checking for the given starting index.
-        let index = new GridIndex(row, column);
+        let index = new GridIndex(startRow, startColumn);
         if (!this.validCellIndex(index)) { 
             throw RangeError ('Starting index out of range.'); 
+        }
+
+        // Bounds checking for the given ending index.
+        let endIndex = new GridIndex(endRow, endColumn);
+        if (!this.validCellIndex(endIndex)) { 
+            throw RangeError ('End index out of range.'); 
         }
 
         this.reset();
@@ -144,6 +160,11 @@ class Maze {
                 nextCell.visited = true;
                 stack.push(nextCell);
                 this._generated.push(nextCell);
+                
+                // Set the solved path
+                if (nextCell.index.row === endIndex.row && nextCell.index.column === endIndex.column) {
+                    this._solution = this._generated.slice();
+                }
             }
         }
         return this._generated;

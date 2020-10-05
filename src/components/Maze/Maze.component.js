@@ -59,7 +59,7 @@ class Maze extends React.Component {
 
     mClicked(canvas, width, height, density) {
         var m = new maze(width, height);
-        var generated = m.generate(1, 1);
+        var generated = m.generate(0, 0, 1, 1);
 
         var ctx = canvas.current.getContext('2d');
         ctx.fillStyle = 'white';
