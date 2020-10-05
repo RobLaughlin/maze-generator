@@ -24,6 +24,13 @@ const DefaultState = {
             width: 20,
             height: 20
         }
+    },
+
+    generation: {
+        start: false,
+        solve: false,
+        entrance: 'Left',
+        active: false
     }
 };
 
