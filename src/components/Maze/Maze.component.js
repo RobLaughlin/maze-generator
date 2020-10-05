@@ -14,22 +14,22 @@ class Maze extends React.Component {
 
     constructor(props) {
         super(props);
-        this.mClicked = this.mClicked.bind(this);
-        this.windowResized = this.windowResized.bind(this);
-        this.canvasContainer = React.createRef();
-        this.canvas = React.createRef();
+        this.mClicked           = this.mClicked.bind(this);
+        this.windowResized      = this.windowResized.bind(this);
+
+        this.canvasContainer    = React.createRef();
+        this.canvas             = React.createRef();
     }
 
     render() {
-        const density = this.props.density.val;
-        const width = (this.props.width.val * density);
-        const height = (this.props.height.val * density);
+        const density   = this.props.density.val;
+        const width     = (this.props.width.val * density);
+        const height    = (this.props.height.val * density);
 
         return(
-            <div className="w-100 d-flex border-bottom border-dark" ref={this.canvasContainer} 
-                onClick={() => {
-                    this.mClicked(this.canvas, this.props.width.val, this.props.height.val, density)
-                }}>
+            <div className="w-100 d-flex border-bottom border-dark" 
+                    ref={this.canvasContainer} 
+                    onClick={() => { this.mClicked(this.canvas, this.props.width.val, this.props.height.val, density)}}>
                 <MediaQuery minWidth={this.props.MIN_WIDTH}>
                     <Canvas ref={this.canvas} style={{ width: width, height: height }} width={width} height={height}/>
                 </MediaQuery>
@@ -45,11 +45,14 @@ class Maze extends React.Component {
         this.windowResized();
     }
 
+    // Autoscale the dimensions of the maze so other components can access these dimensions.
     componentDidUpdate() {
-        const width = this.canvasContainer.current.clientWidth - Maze.PAD.X;
-        const height = (window.innerWidth > this.props.MAX_WIDTH) ?
-                        this.canvasContainer.current.clientHeight - Maze.PAD.Y :
-                        this.canvasContainer.current.clientWidth - Maze.PAD.Y;
+        const width     = this.canvasContainer.current.clientWidth  - Maze.PAD.X;
+
+        // Set height equal to the width of the browser width meets certain requirements.
+        const height    = (window.innerWidth > this.props.MAX_WIDTH)                ?
+                        this.canvasContainer.current.clientHeight   - Maze.PAD.Y    :
+                        this.canvasContainer.current.clientWidth    - Maze.PAD.Y;
 
         this.props.setMazeDims(width, height);
     }
@@ -148,11 +151,15 @@ class Maze extends React.Component {
         
     }
 
+    // // Rescale maze dimensions on window resize
     windowResized() {
-        const width = this.canvasContainer.current.clientWidth - Maze.PAD.X;
-        const height = (window.innerWidth > this.props.MAX_WIDTH) ?
-                        this.canvasContainer.current.clientHeight - Maze.PAD.Y :
-                        this.canvasContainer.current.clientWidth - Maze.PAD.Y;
+        const width     = this.canvasContainer.current.clientWidth  - Maze.PAD.X;
+
+        // Set height equal to the width of the browser width meets certain requirements.
+        const height    = (window.innerWidth > this.props.MAX_WIDTH)                ?
+                        this.canvasContainer.current.clientHeight   - Maze.PAD.Y    :
+                        this.canvasContainer.current.clientWidth    - Maze.PAD.Y;
+        
         const density = this.props.density.val;
         const maxWidth = Math.floor(width / density);
         const maxHeight = Math.floor(height/ density);
