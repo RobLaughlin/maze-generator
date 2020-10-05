@@ -26,15 +26,7 @@ class Maze {
         /** @property {int} columns Maximum number of columns in the maze. */
         this.columns = columns;
 
-        this._cells = {};
-        for (let r = 0; r < this.rows; r++) {
-            this._cells[r] = {};
-            for (let c = 0; c < this.columns; c++) {
-                this._cells[r][c] = new Cell(new GridIndex(r, c));
-            }
-        }
-
-        this._solution = [];
+        this.reset();
     }
 
 
