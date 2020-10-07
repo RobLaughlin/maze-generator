@@ -1,4 +1,4 @@
-export const UPDATE_WIDTH = 'UPDATE_WIDTH';
-export const UPDATE_HEIGHT = 'UPDATE_HEIGHT';
-export const UPDATE_DENSITY = 'UPDATE_DENSITY';
-export const UPDATE_MAZE_DIMS = 'UPDATE_MAZE_DIMS';
+export const WIDTH_CHANGED      = 'WIDTH_CHANGED';
+export const HEIGHT_CHANGED     = 'HEIGHT_CHANGED';
+export const DENSITY_CHANGED    = 'DENSITY_CHANGED';
+export const MAZEDIMS_CHANGED   = 'MAZEDIMS_CHANGED';

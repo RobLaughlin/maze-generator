@@ -2,44 +2,46 @@ import * as ACTIONS from './Generation.types';
 
 export function generate() {
     return {
-        type: ACTIONS.START,
-        payload: { 
-            start: true,
-            solve: false
+        type: ACTIONS.GENERATE_BUTTON_CLICKED,
+        payload: {
+            active: true
         }
     };
 }
 
 export function solve() {
     return {
-        type: ACTIONS.SOLVE,
-        payload: { 
-            start: true,
-            solve: true,
+        type: ACTIONS.SOLVE_BUTTON_CLICKED,
+        payload: {
+            active: true,
+            solve: true 
         }
     };
 }
 
-export function stop() {
+export function skip() {
     return {
-        type: ACTIONS.STOP,
-        payload: {
-            start: false,
-            solve: false,
-        }
+        type: ACTIONS.SKIP_BUTTON_CLICKED,
+        payload: { 
+            skip: true,
+            active: false
+         }
     }
 }
 
+export function stop() {
+    return {
+        type: ACTIONS.GENERATION_HALTED,
+        payload: {
+            active: false,
+            solve: false,
+            skip: false
+        }
+    }
+}
 export function changeEntrance(entrance) {
     return {
         type: ACTIONS.ENTRANCE_CHANGED,
         payload: { entrance: entrance }
-    }
-}
-
-export function setActivity(active) {
-    return {
-        type: ACTIONS.ACTIVITY_CHANGED,
-        payload: { active: active }
     }
 }

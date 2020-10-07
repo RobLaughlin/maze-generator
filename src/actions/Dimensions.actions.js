@@ -2,7 +2,7 @@ import * as ACTIONS from './Dimensions.types';
 
 export function changeWidth(width, max, min) {
     return {
-        type: ACTIONS.UPDATE_WIDTH,
+        type: ACTIONS.WIDTH_CHANGED,
         payload: {
             width: {
                 max: max,
@@ -15,7 +15,7 @@ export function changeWidth(width, max, min) {
 
 export function changeHeight(height, max, min) {
     return {
-        type: ACTIONS.UPDATE_HEIGHT,
+        type: ACTIONS.HEIGHT_CHANGED,
         payload: {
             height: {
                 max: max,
@@ -28,7 +28,7 @@ export function changeHeight(height, max, min) {
 
 export function changeDensity(density, max, min) {
     return {
-        type: ACTIONS.UPDATE_DENSITY,
+        type: ACTIONS.DENSITY_CHANGED,
         payload: {
             density: {
                 val: density,
@@ -42,7 +42,7 @@ export function changeDensity(density, max, min) {
 
 export function setMazeDims(width, height) {
     return {
-        type: ACTIONS.UPDATE_MAZE_DIMS,
+        type: ACTIONS.MAZEDIMS_CHANGED,
         payload: {
             mazeDims: {
                 width: width,

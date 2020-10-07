@@ -2,7 +2,7 @@ import React from 'react';
 import { Canvas } from './Maze.styled';
 import { connect } from 'react-redux';
 import { changeWidth, changeHeight, setMazeDims } from '../../actions/Dimensions.actions';
-import { stop } from '../../actions/Generation.actions';
+import { stop, generate as start } from '../../actions/Generation.actions';
 
 import MediaQuery from 'react-responsive';
 import maze from '../../modules/maze/Maze';
@@ -19,9 +19,16 @@ class Maze extends React.Component {
         this.windowResized      = this.windowResized.bind(this);
         this.renderMaze         = this.renderMaze.bind(this);
         this.renderSolution     = this.renderSolution.bind(this);
+        this.mazeDimsChanged    = this.mazeDimsChanged.bind(this);
+        this.drawCell           = this.drawCell.bind(this);
+        this.drawCellSolution   = this.drawCellSolution.bind(this);
 
         this.canvasContainer    = React.createRef();
         this.canvas             = React.createRef();
+
+        this.maze = null;
+        this.currentFrame = null;
+
     }
 
     render() {
@@ -46,40 +53,45 @@ class Maze extends React.Component {
         this.windowResized();
     }
 
-    
+    // Autoscale the dimensions of the maze so other components can access these dimensions.
+    mazeDimsChanged() {
+        const { MAX_WIDTH, setMazeDims } = this.props;
+
+        const width     = this.canvasContainer.current.clientWidth  - Maze.PAD.X;
+
+        // Set height equal to the width of the browser width meets certain requirements.
+        const height    = (window.innerWidth > MAX_WIDTH)                           ?
+                        this.canvasContainer.current.clientHeight   - Maze.PAD.Y    :
+                        this.canvasContainer.current.clientWidth    - Maze.PAD.Y;
+
+        setMazeDims(width, height);
+        return { width, height };
+    }
+
     componentDidUpdate(prevProps) {
-        // Autoscale the dimensions of the maze so other components can access these dimensions.
-        const { MAX_WIDTH, mazeDims, setMazeDims } = this.props;
+        const { mazeDims } = this.props;
         if (mazeDims.width !== prevProps.mazeDims.width || mazeDims.height !== prevProps.mazeDims.height) {
-
-            const width     = this.canvasContainer.current.clientWidth  - Maze.PAD.X;
-
-            // Set height equal to the width of the browser width meets certain requirements.
-            const height    = (window.innerWidth > MAX_WIDTH)                ?
-                            this.canvasContainer.current.clientHeight   - Maze.PAD.Y    :
-                            this.canvasContainer.current.clientWidth    - Maze.PAD.Y;
-    
-            setMazeDims(width, height);
+            this.mazeDimsChanged();
         }
 
         // Maze generation
-        const { width, height, active, start, solve, stop } =  this.props;
-
-        if (start) {
-            let maze_ = new maze(width.val, height.val);
-            maze_.generate(0, 0, width.val - 1, 0);
-
+        const { width, height, active, solve } =  this.props;
+        
+        if (active && !prevProps.active) {
+            this.maze = new maze(width.val, height.val);
+            this.maze.generate(0, 0, width.val - 1, 0);
+    
             // Clear maze
             var ctx = this.canvas.current.getContext('2d');
             ctx.fillStyle = 'white';
             ctx.fillRect(0, 0, this.canvas.current.width, this.canvas.current.height);
 
-            this.renderMaze(ctx, maze_);
-            if (solve) { 
-                this.renderSolution(ctx, maze_) 
+            if (solve) {
+                this.renderSolution(ctx, true); 
             }
-
-            stop();
+            else {
+                this.renderMaze(ctx, true);
+            }
         }
     }
 
@@ -87,108 +99,119 @@ class Maze extends React.Component {
         window.removeEventListener('resize', this.windowResized);
     }
 
-   renderMaze(ctx, mazeObj) {
-        console.log('e');
-        ctx.beginPath();
+    drawCell(ctx, cell) {
+        let density = this.props.density.val;
+        let swcX = density * cell.index.row;
+        let swcY = density * (this.props.height.val - cell.index.column);
+        
         ctx.strokeStyle = 'black';
-        const generated = mazeObj.generated;
+        ctx.beginPath();
 
-        for (const row in generated){
-            for (const column in generated[row]) {
-                let cell = generated[row][column];
-                let density = this.props.density.val;
-                let swcX = density * cell.index.row;
-                let swcY = density * (this.props.height.val - cell.index.column);
-                
-                if (cell.down.enabled) {
-                    ctx.moveTo(swcX, swcY);
-                    ctx.lineTo(swcX + density, swcY);
-                    ctx.stroke();
-                }
-    
-                if (cell.left.enabled) {
-                    ctx.moveTo(swcX, swcY);
-                    ctx.lineTo(swcX, swcY - density);
-                    ctx.stroke();
-                }
-    
-                if (cell.up.enabled) {
-                    ctx.moveTo(swcX, swcY - density);
-                    ctx.lineTo(swcX + density, swcY - density);
-                    ctx.stroke();
-                } 
-                
-                if (cell.right.enabled) {
-                    ctx.moveTo(swcX + density, swcY);
-                    ctx.lineTo(swcX + density, swcY - density);
-                    ctx.stroke();
-                }
-            }
+        if (cell.down.enabled) {
+            ctx.moveTo(swcX, swcY);
+            ctx.lineTo(swcX + density, swcY);
+            ctx.stroke();
         }
+
+        if (cell.left.enabled) {
+            ctx.moveTo(swcX, swcY);
+            ctx.lineTo(swcX, swcY - density);
+            ctx.stroke();
+        }
+
+        if (cell.up.enabled) {
+            ctx.moveTo(swcX, swcY - density);
+            ctx.lineTo(swcX + density, swcY - density);
+            ctx.stroke();
+        } 
+        
+        if (cell.right.enabled) {
+            ctx.moveTo(swcX + density, swcY);
+            ctx.lineTo(swcX + density, swcY - density);
+            ctx.stroke();
+        }
+
         ctx.closePath();
     }
 
-    renderSolution(ctx, mazeObj) {
-        ctx.beginPath();
+    drawCellSolution(ctx, cell) {
         ctx.strokeStyle = 'green';
+        ctx.beginPath();
 
-        const generated = mazeObj.generated;
-        const solution = mazeObj.solution;
+        let density = this.props.density.val;
+        let cenX = (density * cell.index.row) + (density / 2);
+        let cenY = (density * (this.props.height.val - cell.index.column)) - (density / 2);
 
-        for (const row in solution) {
-            for (const column in solution[row]) {
-                let cell = solution[row][column];
-                let density = this.props.density.val;
-                let cenX = (density * cell.index.row) + (density / 2);
-                let cenY = (density * (this.props.height.val - cell.index.column)) - (density / 2);
+        const generated = this.maze.generated;
+        let south = new GridIndex(cell.index.row, cell.index.column - 1);
+        let west = new GridIndex(cell.index.row - 1, cell.index.column);
+        let north = new GridIndex(cell.index.row, cell.index.column + 1);
+        let east = new GridIndex(cell.index.row + 1, cell.index.column);
 
-                let south = new GridIndex(cell.index.row, cell.index.column - 1);
-                let west = new GridIndex(cell.index.row - 1, cell.index.column);
-                let north = new GridIndex(cell.index.row, cell.index.column + 1);
-                let east = new GridIndex(cell.index.row + 1, cell.index.column);
-
-                if (!cell.down.enabled && mazeObj.validCellIndex(south) && 'solved' in generated[south.row][south.column]) {
-                    ctx.moveTo(cenX, cenY);
-                    ctx.lineTo(cenX, cenY + (density / 2));
-                    ctx.stroke();
-                }
-                
-                if (!cell.left.enabled && mazeObj.validCellIndex(west) && 'solved' in generated[west.row][west.column]) {
-                    ctx.moveTo(cenX, cenY);
-                    ctx.lineTo(cenX - (density / 2), cenY);
-                    ctx.stroke();
-                }
-    
-                if (!cell.up.enabled && mazeObj.validCellIndex(north) && 'solved' in generated[north.row][north.column]) {
-                    ctx.moveTo(cenX, cenY);
-                    ctx.lineTo(cenX, cenY - (density / 2));
-                    ctx.stroke();
-                } 
-                
-                if (!cell.right.enabled && mazeObj.validCellIndex(east) && 'solved' in generated[east.row][east.column]) {
-                    ctx.moveTo(cenX, cenY);
-                    ctx.lineTo(cenX + (density / 2), cenY);
-                    ctx.stroke();
-                }
-            }
+        if (!cell.down.enabled && this.maze.validCellIndex(south) && 'solved' in generated[south.row][south.column]) {
+            ctx.moveTo(cenX, cenY);
+            ctx.lineTo(cenX, cenY + (density / 2));
+            ctx.stroke();
         }
+        
+        if (!cell.left.enabled && this.maze.validCellIndex(west) && 'solved' in generated[west.row][west.column]) {
+            ctx.moveTo(cenX, cenY);
+            ctx.lineTo(cenX - (density / 2), cenY);
+            ctx.stroke();
+        }
+
+        if (!cell.up.enabled && this.maze.validCellIndex(north) && 'solved' in generated[north.row][north.column]) {
+            ctx.moveTo(cenX, cenY);
+            ctx.lineTo(cenX, cenY - (density / 2));
+            ctx.stroke();
+        } 
+        
+        if (!cell.right.enabled && this.maze.validCellIndex(east) && 'solved' in generated[east.row][east.column]) {
+            ctx.moveTo(cenX, cenY);
+            ctx.lineTo(cenX + (density / 2), cenY);
+            ctx.stroke();
+        }
+
         ctx.closePath();
+    }
+
+    renderCells(ctx, cells, animated, draw, i=0) {
+        const { startGeneration, endGeneration } = this.props;
+        let self = this;
+
+        if (i === 0) { startGeneration(); }
+
+        if (i < cells.length) {
+            draw(ctx, cells[i]);
+            if (animated) { 
+                this.currentFrame = requestAnimationFrame(() => { self.renderCells(ctx, cells, animated, draw, i + 1) }) 
+            } 
+            else { 
+                self.renderCells(ctx, cells, animated, draw, i + 1);
+            } 
+        }
+        else {
+            endGeneration();
+        }
+    }
+
+    renderMaze(ctx, animated=false) {
+        this.renderCells(ctx, this.maze.ordered, animated, this.drawCell);
+    }
+
+    renderSolution(ctx, animated=false) {
+        this.renderMaze(ctx, false, this.drawCell);
+        this.renderCells(ctx, this.maze.orderedSolution, animated, this.drawCellSolution);
     }
 
     // // Rescale maze dimensions on window resize
     windowResized() {
-        const width     = this.canvasContainer.current.clientWidth  - Maze.PAD.X;
-
-        // Set height equal to the width of the browser width meets certain requirements.
-        const height    = (window.innerWidth > this.props.MAX_WIDTH)                ?
-                        this.canvasContainer.current.clientHeight   - Maze.PAD.Y    :
-                        this.canvasContainer.current.clientWidth    - Maze.PAD.Y;
+        const {width, height} = this.mazeDimsChanged();
         
         const density = this.props.density.val;
         const maxWidth = Math.floor(width / density);
         const maxHeight = Math.floor(height/ density);
 
-        this.props.setMazeDims(width, height);
         this.props.setWidth(maxWidth, maxWidth);
         this.props.setHeight(maxHeight, maxHeight);
     }
@@ -200,7 +223,7 @@ const mapStateToProps = function(state) {
         height: state.dimensions.height,
         density: state.dimensions.density,
         mazeDims: state.dimensions.mazeDims,
-        start: state.generation.start,
+        generate: state.generation.generate,
         active: state.generation.active,
         solve: state.generation.solve,
         MIN_WIDTH: state.CONSTANTS.MIN_WIDTH,
@@ -213,7 +236,8 @@ const mapDispatchToProps = function(dispatch) {
         setWidth        : (width, max, min)     => { dispatch(changeWidth(width, max, min)) },
         setHeight       : (height, max, min)    => { dispatch(changeHeight(height, max, min)) },
         setMazeDims     : (width, height)       => { dispatch(setMazeDims(width, height))},
-        stop            : ()                    => { dispatch(stop()) } 
+        endGeneration   : ()                    => { dispatch(stop()) },
+        startGeneration : ()                    => { dispatch(start()) }
     }
 };
 

@@ -1,5 +1,5 @@
-export const START              = "START";
-export const STOP               = "STOP";
-export const SOLVE              = "SOLVE";
-export const ENTRANCE_CHANGED   = "ENTRANCE_CHANGED";
-export const ACTIVITY_CHANGED   = "ACTIVITY_CHANGED";
+export const ENTRANCE_CHANGED           = "ENTRANCE_CHANGED";
+export const GENERATE_BUTTON_CLICKED    = "GENERATE_BUTTON_CLICKED";
+export const SOLVE_BUTTON_CLICKED       = "SOLVE_BUTTON_CLICKED";
+export const SKIP_BUTTON_CLICKED        = "SKIP_BUTTON_CLICKED";
+export const GENERATION_HALTED          = "GENERATION_HALTED";

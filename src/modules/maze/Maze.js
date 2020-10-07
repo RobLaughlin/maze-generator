@@ -29,18 +29,29 @@ class Maze {
         this.reset();
     }
 
-
     /**
      * 2D Mapping of [Cells]{@link Cell} containing previously generated maze data. Keyed by [row][column].
      * @type {Object} 
      */
-    get generated() { return produce(this._cells, _ => {}); }
+    get generated() { return this._cells }
+
+    /**
+     * 1D List of cells that keeps the order of the cells in which they were chosen during generation.
+     * @type {(Cell)|Array} 
+     */
+    get ordered() { return this._ordered }
+
+    /**
+     * 1D List of cells that keeps the ordered solution of the cells in which they were chosen during generation.
+     * @type {(Cell)|Array} 
+     */
+    get orderedSolution() { return this._orderedSolution }
 
     /**
      * 2D Mapping of [Cells]{@link Cell} containing the solved maze data. Keyed by [row][column].
      * @type {Object} 
      */
-    get solution() { return produce(this._solution, _ => {}); }
+    get solution() { return this._solution }
 
     /**
      * Determines whether a given 2D [Index]{@link GridIndex} is out of range in the cells array.
@@ -150,13 +161,15 @@ class Maze {
                 nextCell.visited = true;
                 stack.push(nextCell);
                 this._cells[nextCell.index.row][nextCell.index.column] = nextCell
-                
+                this._ordered.push(nextCell);
+
                 // Set the solved path
                 if (nextCell.index.row === endIndex.row && nextCell.index.column === endIndex.column) {
                     stack.forEach(cell => {
                         let r = cell.index.row;
                         let c = cell.index.column;
                         cell.solved = true;
+                        this._orderedSolution.push(cell);
 
                         if (r in this._solution) {
                             this._solution[r][c] = cell;
@@ -177,6 +190,8 @@ class Maze {
    reset() {
         this._cells = {};
         this._solution = {};
+        this._ordered = [];
+        this._orderedSolution = [];
 
         for (let r = 0; r < this.rows; r++) {
             this._cells[r] = {};
