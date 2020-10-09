@@ -2,7 +2,7 @@ import React from 'react';
 import { Canvas } from './Maze.styled';
 import { connect } from 'react-redux';
 import { changeWidth, changeHeight, setMazeDims } from '../../actions/Dimensions.actions';
-import { stop, generate as start } from '../../actions/Generation.actions';
+import { stop, generate as start, clearHandlers } from '../../actions/Generation.actions';
 
 import MediaQuery from 'react-responsive';
 import maze from '../../modules/maze/Maze';
@@ -22,13 +22,14 @@ class Maze extends React.Component {
         this.mazeDimsChanged    = this.mazeDimsChanged.bind(this);
         this.drawCell           = this.drawCell.bind(this);
         this.drawCellSolution   = this.drawCellSolution.bind(this);
+        this.cancelAnimation    = this.cancelAnimation.bind(this);
 
         this.canvasContainer    = React.createRef();
         this.canvas             = React.createRef();
 
         this.maze = null;
         this.currentFrame = null;
-
+        this.generating = null;
     }
 
     render() {
@@ -69,36 +70,74 @@ class Maze extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { mazeDims } = this.props;
+        const { mazeDims, width, height, density, generated, solve, active, clear, skip } = this.props;
+        var ctx = this.canvas.current.getContext('2d');
+
+        // Change for changes in viewport scale via browser resizing
         if (mazeDims.width !== prevProps.mazeDims.width || mazeDims.height !== prevProps.mazeDims.height) {
+            this.cancelAnimation(ctx);
             this.mazeDimsChanged();
         }
 
-        // Maze generation
-        const { width, height, active, solve } =  this.props;
-        
-        if (active && !prevProps.active) {
+        // Check for changes in width, height, or density via the sliders
+        else if (width.val !== prevProps.width.val || height.val !== prevProps.height.val || density.val !== prevProps.density.val) {
+            this.cancelAnimation(ctx);
+        }
+
+        // If the maze generation is active/activated with the default generation
+        else if (active && generated) {
             this.maze = new maze(width.val, height.val);
             this.maze.generate(0, 0, width.val - 1, 0);
-    
-            // Clear maze
-            var ctx = this.canvas.current.getContext('2d');
-            ctx.fillStyle = 'white';
-            ctx.fillRect(0, 0, this.canvas.current.width, this.canvas.current.height);
-
-            if (solve) {
-                this.renderSolution(ctx, true); 
+            this.renderMaze(ctx, true);
+        }
+        
+        // If the maze generation is active/activated with the solution
+        else if (active && solve) {
+            if (this.generating === null) {
+                this.maze = new maze(width.val, height.val);
+                this.maze.generate(0, 0, width.val - 1, 0);
             }
-            else {
-                this.renderMaze(ctx, true);
+
+            this.renderSolution(ctx, true);
+        }
+
+        // If the skip button is clicked
+        else if (!active && prevProps.active && skip) {
+            if (this.generating === 'maze') {
+                this.renderMaze(ctx, false);
+            }
+            else if (this.generating === 'solution') {
+                this.renderSolution(ctx, false);
             }
         }
+
+        clear();
     }
 
     componentWillUnmount() {
         window.removeEventListener('resize', this.windowResized);
     }
 
+    // Clear canvas and cancel any current animation
+    cancelAnimation(ctx) {
+        const { endGeneration } = this.props;
+        this.clearCanvas(ctx);
+
+        if (this.currentFrame !== null) {
+            cancelAnimationFrame(this.currentFrame);
+            this.currentFrame = null;
+        }
+        endGeneration();
+
+    }
+
+    // Clear the canvas
+    clearCanvas(ctx) {
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, this.canvas.current.width, this.canvas.current.height);
+    }
+
+    // Draw a cell with width and height based off of current density
     drawCell(ctx, cell) {
         let density = this.props.density.val;
         let swcX = density * cell.index.row;
@@ -134,6 +173,7 @@ class Maze extends React.Component {
         ctx.closePath();
     }
 
+    // Same as drawCell except looks at available neighbors to determine what path to draw
     drawCellSolution(ctx, cell) {
         ctx.strokeStyle = 'green';
         ctx.beginPath();
@@ -175,6 +215,7 @@ class Maze extends React.Component {
         ctx.closePath();
     }
 
+    // Recursive call to draw frames in a series
     renderCells(ctx, cells, animated, draw, i=0) {
         const { startGeneration, endGeneration } = this.props;
         let self = this;
@@ -192,19 +233,26 @@ class Maze extends React.Component {
         }
         else {
             endGeneration();
+            this.generating = null;
         }
     }
 
+    // Render the maze without a solution
     renderMaze(ctx, animated=false) {
+        this.cancelAnimation(ctx);
+        this.generating = 'maze';
         this.renderCells(ctx, this.maze.ordered, animated, this.drawCell);
     }
 
+    // Render the maze with a solution
     renderSolution(ctx, animated=false) {
+        this.cancelAnimation(ctx);
         this.renderMaze(ctx, false, this.drawCell);
+        this.generating = 'solution';
         this.renderCells(ctx, this.maze.orderedSolution, animated, this.drawCellSolution);
     }
 
-    // // Rescale maze dimensions on window resize
+    // Rescale maze dimensions on window resize
     windowResized() {
         const {width, height} = this.mazeDimsChanged();
         
@@ -223,8 +271,9 @@ const mapStateToProps = function(state) {
         height: state.dimensions.height,
         density: state.dimensions.density,
         mazeDims: state.dimensions.mazeDims,
-        generate: state.generation.generate,
         active: state.generation.active,
+        generated: state.generation.generate,
+        skip: state.generation.skip,
         solve: state.generation.solve,
         MIN_WIDTH: state.CONSTANTS.MIN_WIDTH,
         MAX_WIDTH: state.CONSTANTS.MAX_WIDTH
@@ -237,7 +286,8 @@ const mapDispatchToProps = function(dispatch) {
         setHeight       : (height, max, min)    => { dispatch(changeHeight(height, max, min)) },
         setMazeDims     : (width, height)       => { dispatch(setMazeDims(width, height))},
         endGeneration   : ()                    => { dispatch(stop()) },
-        startGeneration : ()                    => { dispatch(start()) }
+        startGeneration : ()                    => { dispatch(start()) },
+        clear           : ()                    => { dispatch(clearHandlers()) }
     }
 };
 

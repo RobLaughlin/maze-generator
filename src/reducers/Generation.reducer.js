@@ -6,6 +6,7 @@ export const generationReducer = function(state = DefaultState.generation, actio
     switch (action.type) {
         case ACTIONS.GENERATE_BUTTON_CLICKED:
             return produce(state, newState => { 
+                newState.generate = action.payload.generate;
                 newState.active = action.payload.active;
             });
         case ACTIONS.SOLVE_BUTTON_CLICKED:
@@ -21,6 +22,12 @@ export const generationReducer = function(state = DefaultState.generation, actio
         case ACTIONS.GENERATION_HALTED:
             return produce(state, newState => {
                 newState.active = action.payload.active;
+                newState.skip = action.payload.skip;
+                newState.generate = action.payload.generate;
+                newState.solve = action.payload.solve;
+            });
+        case ACTIONS.EVENTS_RECEIVED:
+            return produce(state, newState => {
                 newState.skip = action.payload.skip;
                 newState.generate = action.payload.generate;
                 newState.solve = action.payload.solve;

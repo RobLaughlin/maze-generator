@@ -1,12 +1,12 @@
 import React from 'react';
 import { Button_ as Button } from '../Sidepanel.style';
 import Form from 'react-bootstrap/Form';
-import { generate, solve, changeEntrance } from '../../../actions/Generation.actions';
+import { generate, solve, changeEntrance, skip } from '../../../actions/Generation.actions';
 import { connect } from 'react-redux';
 
 class Creation extends React.Component {
     render() {
-        const { active, generate, changeEntrance, solve } = this.props;
+        const { active, generate, changeEntrance, solve, skip } = this.props;
         return (
             <div>
                 <hr />
@@ -28,7 +28,7 @@ class Creation extends React.Component {
                     <Button variant="dark" 
                             className={"col-10 m-auto " + (active ? "" : "disabled")}
                             disabled={!active}
-                            onClick={generate}>
+                            onClick={skip}>
                             Skip Animation
                     </Button>
                 </div>
@@ -48,7 +48,8 @@ const mapDispatchToProps = function(dispatch) {
     return {
         generate        : ()            => { dispatch(generate()) },
         changeEntrance  : (entrance)    => { dispatch(changeEntrance(entrance)) },
-        solve           : ()            => { dispatch(solve()) }
+        solve           : ()            => { dispatch(solve()) },
+        skip            : ()            => { dispatch(skip()) }
     }
 };
 

@@ -4,6 +4,7 @@ export function generate() {
     return {
         type: ACTIONS.GENERATE_BUTTON_CLICKED,
         payload: {
+            generate: true,
             active: true
         }
     };
@@ -33,12 +34,25 @@ export function stop() {
     return {
         type: ACTIONS.GENERATION_HALTED,
         payload: {
+            generate: false,
             active: false,
             solve: false,
             skip: false
         }
     }
 }
+
+export function clearHandlers() {
+    return {
+        type: ACTIONS.EVENTS_RECEIVED,
+        payload: {
+            generate: false,
+            solve: false,
+            skip: false
+        }
+    }
+}
+
 export function changeEntrance(entrance) {
     return {
         type: ACTIONS.ENTRANCE_CHANGED,
