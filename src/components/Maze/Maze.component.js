@@ -2,7 +2,7 @@ import React from 'react';
 import { Canvas } from './Maze.styled';
 import { connect } from 'react-redux';
 import { changeWidth, changeHeight, setMazeDims } from '../../actions/Dimensions.actions';
-import { stop, generate as start, clearHandlers } from '../../actions/Generation.actions';
+import { stop, generate as start, clearHandlers as clear } from '../../actions/Generation.actions';
 
 import MediaQuery from 'react-responsive';
 import maze from '../../modules/maze/Maze';
@@ -71,7 +71,7 @@ class Maze extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { mazeDims, width, height, density, generated, solve, active, clear, skip } = this.props;
+        const { mazeDims, width, height, density, generated, solve, active, clearHandlers, skip } = this.props;
         var ctx = this.canvas.current.getContext('2d');
 
         // Change for changes in viewport scale via browser resizing
@@ -94,7 +94,7 @@ class Maze extends React.Component {
         
         // If the maze generation is active/activated with the solution
         else if (active && solve) {
-            if (this.state.generating === null || this.state.generating === 'done') {
+            if (this.state.generating === null) {
                 this.maze = new maze(width.val, height.val);
                 this.maze.generate(0, 0, width.val - 1, 0);
             }
@@ -112,7 +112,8 @@ class Maze extends React.Component {
             }
         }
 
-        clear();
+        // Clear any previous handler state
+        clearHandlers();
     }
 
     componentWillUnmount() {
@@ -184,6 +185,8 @@ class Maze extends React.Component {
         let cenY = (density * (this.props.height.val - cell.index.column)) - (density / 2);
 
         const generated = this.maze.generated;
+
+        // Adjacent neighbors
         let south = new GridIndex(cell.index.row, cell.index.column - 1);
         let west = new GridIndex(cell.index.row - 1, cell.index.column);
         let north = new GridIndex(cell.index.row, cell.index.column + 1);
@@ -288,7 +291,7 @@ const mapDispatchToProps = function(dispatch) {
         setMazeDims     : (width, height)       => { dispatch(setMazeDims(width, height))},
         endGeneration   : ()                    => { dispatch(stop()) },
         startGeneration : ()                    => { dispatch(start()) },
-        clear           : ()                    => { dispatch(clearHandlers()) }
+        clearHandlers   : ()                    => { dispatch(clear()) }
     }
 };
 
