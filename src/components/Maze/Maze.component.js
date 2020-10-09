@@ -27,9 +27,9 @@ class Maze extends React.Component {
         this.canvasContainer    = React.createRef();
         this.canvas             = React.createRef();
 
-        this.maze = null;
-        this.currentFrame = null;
-        this.generating = null;
+        this.maze           = null;
+        this.currentFrame   = null;
+        this.state = { generating: null };
     }
 
     render() {
@@ -38,9 +38,10 @@ class Maze extends React.Component {
         const height    = (this.props.height.val * density);
 
         return(
-            <div className="w-100 d-flex border-bottom border-dark" ref={this.canvasContainer} >
+            <div className="w-100 d-flex" ref={this.canvasContainer} >
                 <MediaQuery minWidth={this.props.MIN_WIDTH}>
-                    <Canvas ref={this.canvas} style={{ width: width, height: height }} width={width} height={height}/>
+                    <Canvas ref={this.canvas} style={{ width: width, height: height }} width={width} height={height}
+                            className={(this.state.generating === 'done') ? '' : 'border border-dark'}/>
                 </MediaQuery>
                 <MediaQuery maxWidth={this.props.MAX_WIDTH}>
                     <Canvas ref={this.canvas} className="mt-3 mb-3" style={{ width: width, height: height }} width={width} height={height}/>
@@ -93,7 +94,7 @@ class Maze extends React.Component {
         
         // If the maze generation is active/activated with the solution
         else if (active && solve) {
-            if (this.generating === null) {
+            if (this.state.generating === null || this.state.generating === 'done') {
                 this.maze = new maze(width.val, height.val);
                 this.maze.generate(0, 0, width.val - 1, 0);
             }
@@ -103,10 +104,10 @@ class Maze extends React.Component {
 
         // If the skip button is clicked
         else if (!active && prevProps.active && skip) {
-            if (this.generating === 'maze') {
+            if (this.state.generating === 'maze') {
                 this.renderMaze(ctx, false);
             }
-            else if (this.generating === 'solution') {
+            else if (this.state.generating === 'solution') {
                 this.renderSolution(ctx, false);
             }
         }
@@ -128,7 +129,7 @@ class Maze extends React.Component {
             this.currentFrame = null;
         }
         endGeneration();
-
+        this.setState({ generating: null });
     }
 
     // Clear the canvas
@@ -233,14 +234,14 @@ class Maze extends React.Component {
         }
         else {
             endGeneration();
-            this.generating = null;
+            this.setState({ generating: 'done' });
         }
     }
 
     // Render the maze without a solution
     renderMaze(ctx, animated=false) {
         this.cancelAnimation(ctx);
-        this.generating = 'maze';
+        this.setState({ generating: 'maze' });
         this.renderCells(ctx, this.maze.ordered, animated, this.drawCell);
     }
 
@@ -248,7 +249,7 @@ class Maze extends React.Component {
     renderSolution(ctx, animated=false) {
         this.cancelAnimation(ctx);
         this.renderMaze(ctx, false, this.drawCell);
-        this.generating = 'solution';
+        this.setState({ generating: 'solution' });
         this.renderCells(ctx, this.maze.orderedSolution, animated, this.drawCellSolution);
     }
 
