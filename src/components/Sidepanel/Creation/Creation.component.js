@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button_ as Button } from '../Sidepanel.style';
 import Form from 'react-bootstrap/Form';
-import { generate, solve, changeEntrance, skip } from '../../../actions/Generation.actions';
+import { generate as gen, solve, changeEntrance, skip } from '../../../actions/Generation.actions';
 import { connect } from 'react-redux';
 
 class Creation extends React.Component {
@@ -46,7 +46,7 @@ const mapStateToProps = function(state) {
 
 const mapDispatchToProps = function(dispatch) {
     return {
-        generate        : ()            => { dispatch(generate()) },
+        generate        : ()            => { dispatch(gen()) },
         changeEntrance  : (entrance)    => { dispatch(changeEntrance(entrance)) },
         solve           : ()            => { dispatch(solve()) },
         skip            : ()            => { dispatch(skip()) }

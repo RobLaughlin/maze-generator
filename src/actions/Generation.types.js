@@ -2,5 +2,5 @@ export const ENTRANCE_CHANGED           = "ENTRANCE_CHANGED";
 export const GENERATE_BUTTON_CLICKED    = "GENERATE_BUTTON_CLICKED";
 export const SOLVE_BUTTON_CLICKED       = "SOLVE_BUTTON_CLICKED";
 export const SKIP_BUTTON_CLICKED        = "SKIP_BUTTON_CLICKED";
-export const GENERATION_HALTED          = "GENERATION_HALTED";
-export const EVENTS_RECEIVED            = "EVENTS_RECEIVED";
+export const ACTIVITY_CHANGED           = "ACTIVITY_CHANGED";
+export const EVENTS_CLEARED             = "EVENTS_CLEARED";

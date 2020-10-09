@@ -3,9 +3,8 @@ import * as ACTIONS from './Generation.types';
 export function generate() {
     return {
         type: ACTIONS.GENERATE_BUTTON_CLICKED,
-        payload: {
-            generate: true,
-            active: true
+        payload: { 
+            generateBtn: true
         }
     };
 }
@@ -13,9 +12,8 @@ export function generate() {
 export function solve() {
     return {
         type: ACTIONS.SOLVE_BUTTON_CLICKED,
-        payload: {
-            active: true,
-            solve: true 
+        payload: { 
+            solveBtn: true,
         }
     };
 }
@@ -24,31 +22,27 @@ export function skip() {
     return {
         type: ACTIONS.SKIP_BUTTON_CLICKED,
         payload: { 
-            skip: true,
-            active: false
-         }
-    }
-}
-
-export function stop() {
-    return {
-        type: ACTIONS.GENERATION_HALTED,
-        payload: {
-            generate: false,
-            active: false,
-            solve: false,
-            skip: false
+            skipBtn: true
         }
     }
 }
 
 export function clearHandlers() {
     return {
-        type: ACTIONS.EVENTS_RECEIVED,
+        type: ACTIONS.EVENTS_CLEARED,
         payload: {
-            generate: false,
-            solve: false,
-            skip: false
+            generateBtn: false,
+            solveBtn: false,
+            skipBtn: false
+        }
+    }
+}
+
+export function active(activity) {
+    return {
+        type: ACTIONS.ACTIVITY_CHANGED,
+        payload: {
+            active: activity
         }
     }
 }

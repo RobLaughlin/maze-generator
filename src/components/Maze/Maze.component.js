@@ -2,13 +2,14 @@ import React from 'react';
 import { Canvas } from './Maze.styled';
 import { connect } from 'react-redux';
 import { changeWidth, changeHeight, setMazeDims } from '../../actions/Dimensions.actions';
-import { stop, generate as start, clearHandlers as clear } from '../../actions/Generation.actions';
+import { clearHandlers as clear, generate, active as generating } from '../../actions/Generation.actions';
 
 import MediaQuery from 'react-responsive';
 import maze from '../../modules/maze/Maze';
 import GridIndex from '../../modules/maze/GridIndex';
 
 class Maze extends React.Component {
+    // Internal padding of maze inside its container.
     static PAD = {
         X: 40,
         Y: 40
@@ -27,9 +28,11 @@ class Maze extends React.Component {
         this.canvasContainer    = React.createRef();
         this.canvas             = React.createRef();
 
-        this.maze           = null;
-        this.currentFrame   = null;
-        this.state = { generating: null };
+        this.state = { 
+            maze                : null, // The maze to generate. 
+            currentFrame        : null, // The current frame of animation 
+            currentGeneration   : null  // String value of either "maze", "solution", or null.
+         };
     }
 
     render() {
@@ -40,11 +43,22 @@ class Maze extends React.Component {
         return(
             <div className="w-100 d-flex" ref={this.canvasContainer} >
                 <MediaQuery minWidth={this.props.MIN_WIDTH}>
-                    <Canvas ref={this.canvas} style={{ width: width, height: height }} width={width} height={height}
-                            className={(this.state.generating === 'done') ? '' : 'border border-dark'}/>
+                    <Canvas 
+                        ref={this.canvas} 
+                        style={{ width: width, height: height }}
+                        width={width} 
+                        height={height}
+                        className={(this.state.maze === null) ? 'border border-dark' : ''}
+                    />
                 </MediaQuery>
                 <MediaQuery maxWidth={this.props.MAX_WIDTH}>
-                    <Canvas ref={this.canvas} className="mt-3 mb-3" style={{ width: width, height: height }} width={width} height={height}/>
+                    <Canvas 
+                        ref={this.canvas} 
+                        className={'mt-3 mb-3 ' + ((this.state.maze === null) ? 'border border-dark' : '')}
+                        style={{ width: width, height: height }} 
+                        width={width} 
+                        height={height}
+                    />
                 </MediaQuery>
             </div>
         );
@@ -71,48 +85,57 @@ class Maze extends React.Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { mazeDims, width, height, density, generated, solve, active, clearHandlers, skip } = this.props;
+        const { mazeDims, width, height, density } = this.props;
         var ctx = this.canvas.current.getContext('2d');
 
         // Change for changes in viewport scale via browser resizing
         if (mazeDims.width !== prevProps.mazeDims.width || mazeDims.height !== prevProps.mazeDims.height) {
             this.cancelAnimation(ctx);
             this.mazeDimsChanged();
+            this.setState({ maze: null });
         }
 
         // Check for changes in width, height, or density via the sliders
         else if (width.val !== prevProps.width.val || height.val !== prevProps.height.val || density.val !== prevProps.density.val) {
             this.cancelAnimation(ctx);
+            this.setState({ maze: null });
         }
 
-        // If the maze generation is active/activated with the default generation
-        else if (active && generated) {
-            this.maze = new maze(width.val, height.val);
-            this.maze.generate(0, 0, width.val - 1, 0);
-            this.renderMaze(ctx, true);
+        const { generateClicked, solveClicked, skipClicked, clearHandlers } = this.props;
+
+        // Always generate a new maze when the generate button is clicked
+        if (generateClicked) {
+            let mz = new maze(width.val, height.val);
+            mz.generate(0, 0, width.val - 1, 0);
+            this.setState({ maze: mz }, (self=this) => { self.renderMaze(ctx, true); });
+        }
+
+        // Only generate a new solution if there is no current maze data
+        else if (solveClicked) {
+            if (this.state.maze === null) {
+                let mz = new maze(width.val, height.val);
+                mz.generate(0, 0, width.val - 1, 0);
+    
+                this.setState({ maze: mz }, (self=this) => {
+                    self.renderSolution(ctx, true);
+                });
+            }
+            else {
+                this.renderSolution(ctx, true);
+            }
+        }
+
+        // Skip button handler
+        else if (skipClicked) {
+            console.log(this.state.currentGeneration);
+            if (this.state.currentGeneration === 'maze') {
+                this.renderMaze(ctx, false)
+            }
+            else if (this.state.currentGeneration === 'solution') {
+                this.renderSolution(ctx, false)
+            }
         }
         
-        // If the maze generation is active/activated with the solution
-        else if (active && solve) {
-            if (this.state.generating === null) {
-                this.maze = new maze(width.val, height.val);
-                this.maze.generate(0, 0, width.val - 1, 0);
-            }
-
-            this.renderSolution(ctx, true);
-        }
-
-        // If the skip button is clicked
-        else if (!active && prevProps.active && skip) {
-            if (this.state.generating === 'maze') {
-                this.renderMaze(ctx, false);
-            }
-            else if (this.state.generating === 'solution') {
-                this.renderSolution(ctx, false);
-            }
-        }
-
-        // Clear any previous handler state
         clearHandlers();
     }
 
@@ -122,15 +145,12 @@ class Maze extends React.Component {
 
     // Clear canvas and cancel any current animation
     cancelAnimation(ctx) {
-        const { endGeneration } = this.props;
         this.clearCanvas(ctx);
-
-        if (this.currentFrame !== null) {
-            cancelAnimationFrame(this.currentFrame);
-            this.currentFrame = null;
-        }
-        endGeneration();
-        this.setState({ generating: null });
+        
+        if (this.state.currentFrame !== null) {
+            cancelAnimationFrame(this.state.currentFrame);
+            this.setState({ currentFrame: null });
+        } 
     }
 
     // Clear the canvas
@@ -184,33 +204,34 @@ class Maze extends React.Component {
         let cenX = (density * cell.index.row) + (density / 2);
         let cenY = (density * (this.props.height.val - cell.index.column)) - (density / 2);
 
-        const generated = this.maze.generated;
+        const generated = this.state.maze.generated;
 
         // Adjacent neighbors
-        let south = new GridIndex(cell.index.row, cell.index.column - 1);
-        let west = new GridIndex(cell.index.row - 1, cell.index.column);
-        let north = new GridIndex(cell.index.row, cell.index.column + 1);
-        let east = new GridIndex(cell.index.row + 1, cell.index.column);
+        let south   = new GridIndex(cell.index.row, cell.index.column - 1);
+        let west    = new GridIndex(cell.index.row - 1, cell.index.column);
+        let north   = new GridIndex(cell.index.row, cell.index.column + 1);
+        let east    = new GridIndex(cell.index.row + 1, cell.index.column);
 
-        if (!cell.down.enabled && this.maze.validCellIndex(south) && 'solved' in generated[south.row][south.column]) {
+        // Check if a certain neighbor is part of the solution and whether to draw a solution path to it
+        if (!cell.down.enabled && this.state.maze.validCellIndex(south) && 'solved' in generated[south.row][south.column]) {
             ctx.moveTo(cenX, cenY);
             ctx.lineTo(cenX, cenY + (density / 2));
             ctx.stroke();
         }
         
-        if (!cell.left.enabled && this.maze.validCellIndex(west) && 'solved' in generated[west.row][west.column]) {
+        if (!cell.left.enabled && this.state.maze.validCellIndex(west) && 'solved' in generated[west.row][west.column]) {
             ctx.moveTo(cenX, cenY);
             ctx.lineTo(cenX - (density / 2), cenY);
             ctx.stroke();
         }
 
-        if (!cell.up.enabled && this.maze.validCellIndex(north) && 'solved' in generated[north.row][north.column]) {
+        if (!cell.up.enabled && this.state.maze.validCellIndex(north) && 'solved' in generated[north.row][north.column]) {
             ctx.moveTo(cenX, cenY);
             ctx.lineTo(cenX, cenY - (density / 2));
             ctx.stroke();
         } 
         
-        if (!cell.right.enabled && this.maze.validCellIndex(east) && 'solved' in generated[east.row][east.column]) {
+        if (!cell.right.enabled && this.state.maze.validCellIndex(east) && 'solved' in generated[east.row][east.column]) {
             ctx.moveTo(cenX, cenY);
             ctx.lineTo(cenX + (density / 2), cenY);
             ctx.stroke();
@@ -221,47 +242,52 @@ class Maze extends React.Component {
 
     // Recursive call to draw frames in a series
     renderCells(ctx, cells, animated, draw, i=0) {
-        const { startGeneration, endGeneration } = this.props;
         let self = this;
-
-        if (i === 0) { startGeneration(); }
-
+ 
         if (i < cells.length) {
             draw(ctx, cells[i]);
-            if (animated) { 
-                this.currentFrame = requestAnimationFrame(() => { self.renderCells(ctx, cells, animated, draw, i + 1) }) 
+
+            if (animated) { self.setState({ 
+                    currentFrame: requestAnimationFrame(() => { self.renderCells(ctx, cells, animated, draw, i + 1) 
+                }) 
+            })
+
             } 
             else { 
                 self.renderCells(ctx, cells, animated, draw, i + 1);
             } 
         }
         else {
-            endGeneration();
-            this.setState({ generating: 'done' });
+            self.props.generating(false);
         }
     }
 
     // Render the maze without a solution
     renderMaze(ctx, animated=false) {
         this.cancelAnimation(ctx);
-        this.setState({ generating: 'maze' });
-        this.renderCells(ctx, this.maze.ordered, animated, this.drawCell);
+        this.setState({ currentGeneration: 'maze' }, (self=this) => {
+            self.props.generating(true);
+            self.renderCells(ctx, self.state.maze.ordered, animated, self.drawCell);
+        });
+        
     }
 
     // Render the maze with a solution
     renderSolution(ctx, animated=false) {
         this.cancelAnimation(ctx);
-        this.renderMaze(ctx, false, this.drawCell);
-        this.setState({ generating: 'solution' });
-        this.renderCells(ctx, this.maze.orderedSolution, animated, this.drawCellSolution);
+        this.setState({ currentGeneration: 'solution'}, (self=this) => {
+            self.renderCells(ctx, self.state.maze.ordered, false, self.drawCell);
+            self.props.generating(true);
+            self.renderCells(ctx, self.state.maze.orderedSolution, animated, self.drawCellSolution);
+        });
     }
 
     // Rescale maze dimensions on window resize
     windowResized() {
         const {width, height} = this.mazeDimsChanged();
         
-        const density = this.props.density.val;
-        const maxWidth = Math.floor(width / density);
+        const density   = this.props.density.val;
+        const maxWidth  = Math.floor(width / density);
         const maxHeight = Math.floor(height/ density);
 
         this.props.setWidth(maxWidth, maxWidth);
@@ -271,16 +297,18 @@ class Maze extends React.Component {
 
 const mapStateToProps = function(state) {
     return {
+        MIN_WIDTH: state.CONSTANTS.MIN_WIDTH,
+        MAX_WIDTH: state.CONSTANTS.MAX_WIDTH,
+
         width: state.dimensions.width,
         height: state.dimensions.height,
         density: state.dimensions.density,
         mazeDims: state.dimensions.mazeDims,
-        active: state.generation.active,
-        generated: state.generation.generate,
-        skip: state.generation.skip,
-        solve: state.generation.solve,
-        MIN_WIDTH: state.CONSTANTS.MIN_WIDTH,
-        MAX_WIDTH: state.CONSTANTS.MAX_WIDTH
+
+        generateClicked: state.generation.generateBtn,
+        solveClicked: state.generation.solveBtn,
+        skipClicked: state.generation.skipBtn,
+        active: state.generation.active
     }
 };
 
@@ -289,9 +317,9 @@ const mapDispatchToProps = function(dispatch) {
         setWidth        : (width, max, min)     => { dispatch(changeWidth(width, max, min)) },
         setHeight       : (height, max, min)    => { dispatch(changeHeight(height, max, min)) },
         setMazeDims     : (width, height)       => { dispatch(setMazeDims(width, height))},
-        endGeneration   : ()                    => { dispatch(stop()) },
-        startGeneration : ()                    => { dispatch(start()) },
-        clearHandlers   : ()                    => { dispatch(clear()) }
+        startGeneration : ()                    => { dispatch(generate()) },
+        clearHandlers   : ()                    => { dispatch(clear()) },
+        generating      : (status)              => { dispatch(generating(status)) }
     }
 };
 
