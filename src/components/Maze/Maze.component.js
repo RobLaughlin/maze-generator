@@ -24,15 +24,21 @@ class Maze extends React.Component {
         this.drawCell           = this.drawCell.bind(this);
         this.drawCellSolution   = this.drawCellSolution.bind(this);
         this.cancelAnimation    = this.cancelAnimation.bind(this);
-
+        this.generateBtnClicked = this.generateBtnClicked.bind(this);
+        this.solveBtnClicked    = this.solveBtnClicked.bind(this);
+        this.skipBtnClicked     = this.skipBtnClicked.bind(this);
+        
         this.canvasContainer    = React.createRef();
         this.canvas             = React.createRef();
 
+        this.animationTimer     = null; // Timer to control animation FPS.
         this.state = { 
             maze                : null, // The maze to generate. 
             currentFrame        : null, // The current frame of animation 
-            currentGeneration   : null  // String value of either "maze", "solution", or null.
+            currentGeneration   : null, // String value of either "maze", "solution", or null.
          };
+
+         
     }
 
     render() {
@@ -103,39 +109,42 @@ class Maze extends React.Component {
 
         const { generateClicked, solveClicked, skipClicked, clearHandlers } = this.props;
 
-        // Always generate a new maze when the generate button is clicked
-        if (generateClicked) {
-            let mz = new maze(width.val, height.val);
-            mz.generate(0, 0, width.val - 1, 0);
-            this.setState({ maze: mz }, (self=this) => { self.renderMaze(ctx, true); });
-        }
-
-        // Only generate a new solution if there is no current maze data
-        else if (solveClicked) {
-            if (this.state.maze === null) {
-                let mz = new maze(width.val, height.val);
-                mz.generate(0, 0, width.val - 1, 0);
-    
-                this.setState({ maze: mz }, (self=this) => {
-                    self.renderSolution(ctx, true);
-                });
-            }
-            else {
-                this.renderSolution(ctx, true);
-            }
-        }
-
-        // Skip button handler
-        else if (skipClicked) {
-            if (this.state.currentGeneration === 'maze') {
-                this.renderMaze(ctx, false)
-            }
-            else if (this.state.currentGeneration === 'solution') {
-                this.renderSolution(ctx, false)
-            }
-        }
+        
+        if      (generateClicked)   { this.generateBtnClicked(ctx) }
+        else if (solveClicked)      { this.solveBtnClicked(ctx); }
+        else if (skipClicked)       { this.skipBtnClicked(ctx); }
         
         clearHandlers();
+    }
+
+    generateBtnClicked(ctx) {
+        const {width, height} = this.props;
+        // Always generate a new maze when the generate button is clicked
+        let mz = new maze(width.val, height.val);
+        mz.generate(0, 0, width.val - 1, 0);
+        this.setState({ maze: mz }, (self=this) => { self.renderMaze(ctx, true); });
+    }
+
+    solveBtnClicked(ctx) {
+        const {width, height} = this.props;
+
+        // Only generate a new solution if there is no current maze data
+        if (this.state.maze === null) {
+            let mz = new maze(width.val, height.val);
+            mz.generate(0, 0, width.val - 1, 0);
+
+            this.setState({ maze: mz }, (self=this) => {
+                self.renderSolution(ctx, true);
+            });
+        }
+        else {
+            this.renderSolution(ctx, true);
+        }
+    }
+
+    skipBtnClicked(ctx) {
+        if (this.state.currentGeneration === 'maze') { this.renderMaze(ctx, false) }
+        else if (this.state.currentGeneration === 'solution') { this.renderSolution(ctx, false) }
     }
 
     componentWillUnmount() {
@@ -144,6 +153,11 @@ class Maze extends React.Component {
 
     // Clear canvas and cancel any current animation
     cancelAnimation(ctx) {
+        if (this.animationTimer !== null) {
+            clearTimeout(this.animationTimer);
+            this.animationTimer = null;
+        }
+
         this.clearCanvas(ctx);
         
         if (this.state.currentFrame !== null) {
@@ -248,11 +262,14 @@ class Maze extends React.Component {
         if (i < cells.length) {
             draw(ctx, cells[i]);
 
-            if (animated) { self.setState({ 
-                    currentFrame: requestAnimationFrame(() => { self.renderCells(ctx, cells, animated, draw, i + 1) 
-                }) 
-            })
-
+            // Pretty ugly, but currently the only nice way to set state, control FPS, and use requestAnimationFrame 
+            // all at the same time.
+            if (animated) {
+                self.animationTimer = setTimeout(() => {
+                    self.setState({
+                        currentFrame: requestAnimationFrame(() => { self.renderCells(ctx, cells, animated, draw, i + 1)})
+                    }) 
+                }, 1000 / self.props.framerate);
             } 
             else { 
                 self.renderCells(ctx, cells, animated, draw, i + 1);
@@ -267,6 +284,7 @@ class Maze extends React.Component {
     renderMaze(ctx, animated=false) {
         this.cancelAnimation(ctx);
         if (this.state.maze === null) { return; }
+
         this.setState({ currentGeneration: 'maze' }, (self=this) => {
             self.props.generating(true);
             self.renderCells(ctx, self.state.maze.ordered, animated, self.drawCell);
@@ -278,7 +296,8 @@ class Maze extends React.Component {
     renderSolution(ctx, animated=false) {
         this.cancelAnimation(ctx);
         if (this.state.maze === null) { return; }
-        this.setState({ currentGeneration: 'solution'}, (self=this) => {
+
+        this.setState({ currentGeneration: 'solution' }, (self=this) => {
             self.renderCells(ctx, self.state.maze.ordered, false, self.drawCell);
             self.props.generating(true);
             self.renderCells(ctx, self.state.maze.orderedSolution, animated, self.drawCellSolution);
@@ -311,7 +330,9 @@ const mapStateToProps = function(state) {
         generateClicked: state.generation.generateBtn,
         solveClicked: state.generation.solveBtn,
         skipClicked: state.generation.skipBtn,
-        active: state.generation.active
+        active: state.generation.active,
+
+        framerate: state.animation.framerate.val
     }
 };
 

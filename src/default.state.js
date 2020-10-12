@@ -31,6 +31,14 @@ const DefaultState = {
         solve: false,
         entrance: 'Left',
         active: false
+    },
+
+    animation: {
+        framerate: {
+            val: 60,
+            max: 60,
+            min: 1
+        }
     }
 };
 
