@@ -8,3 +8,21 @@ export function setFramerate(val) {
         }
     }
 }
+
+export function enable() {
+    return {
+        type: ACTIONS.ANIMATION_ENABLED,
+        payload: {
+            enabled: true
+        }
+    }
+}
+
+export function disable() {
+    return {
+        type: ACTIONS.ANIMATION_DISABLED,
+        payload: {
+            enabled: false
+        }
+    }
+}

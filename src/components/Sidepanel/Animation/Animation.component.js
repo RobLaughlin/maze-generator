@@ -1,15 +1,18 @@
 import React from 'react';
 import Form from 'react-bootstrap/Form';
 import { connect } from 'react-redux';
-import { setFramerate } from '../../../actions/Animation.actions';
+import { setFramerate, enable, disable } from '../../../actions/Animation.actions';
 
 class Animation extends React.Component {
     constructor(props) {
         super(props);
-        this.framerateChanged = this.framerateChanged.bind(this);
+        this.framerateChanged       = this.framerateChanged.bind(this);
+        this.enableAnimationChanged = this.enableAnimationChanged.bind(this);
+    
     }
     render() {
         const { min, max, val } = this.props.framerate;
+        const enabled = this.props.animationEnabled;
 
         return(
             <div>
@@ -25,7 +28,7 @@ class Animation extends React.Component {
                 </div>
                 <div className="row mr-1 ml-1">
                     <Form.Label className="col-4 ml-2 mt-1">Enable:</Form.Label>
-                    <Form.Check className="mr-auto mt-auto mb-auto p-0"/>
+                    <Form.Check className="mr-auto mt-auto mb-auto p-0" checked={enabled} onChange={this.enableAnimationChanged}/>
                 </div>
                 <hr />
             </div>
@@ -35,17 +38,25 @@ class Animation extends React.Component {
     framerateChanged(e) {
         this.props.setFPS(parseInt(e.target.value))
     }
+
+    enableAnimationChanged(e) {
+        if (e.target.checked)   { this.props.enableAnimation() }
+        else                    { this.props.disableAnimation() }
+    }
 }
 
 const mapStateToProps = function(state) {
     return {
-        framerate: state.animation.framerate
+        framerate       : state.animation.framerate,
+        animationEnabled: state.animation.enabled
     }
 };
 
 const mapDispatchToProps = function(dispatch) {
     return {
-        setFPS: (fps) => { dispatch(setFramerate(fps)) }
+        setFPS:             (fps)   => { dispatch(setFramerate(fps)) },
+        enableAnimation:    ()      => { dispatch(enable()) },
+        disableAnimation:   ()      => { dispatch(disable()) }
     }
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Animation);

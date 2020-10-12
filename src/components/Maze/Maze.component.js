@@ -27,7 +27,7 @@ class Maze extends React.Component {
         this.generateBtnClicked = this.generateBtnClicked.bind(this);
         this.solveBtnClicked    = this.solveBtnClicked.bind(this);
         this.skipBtnClicked     = this.skipBtnClicked.bind(this);
-        
+
         this.canvasContainer    = React.createRef();
         this.canvas             = React.createRef();
 
@@ -118,15 +118,15 @@ class Maze extends React.Component {
     }
 
     generateBtnClicked(ctx) {
-        const {width, height} = this.props;
+        const {width, height, animationEnabled} = this.props;
         // Always generate a new maze when the generate button is clicked
         let mz = new maze(width.val, height.val);
         mz.generate(0, 0, width.val - 1, 0);
-        this.setState({ maze: mz }, (self=this) => { self.renderMaze(ctx, true); });
+        this.setState({ maze: mz }, (self=this) => { self.renderMaze(ctx, animationEnabled); });
     }
 
     solveBtnClicked(ctx) {
-        const {width, height} = this.props;
+        const {width, height, animationEnabled} = this.props;
 
         // Only generate a new solution if there is no current maze data
         if (this.state.maze === null) {
@@ -134,17 +134,17 @@ class Maze extends React.Component {
             mz.generate(0, 0, width.val - 1, 0);
 
             this.setState({ maze: mz }, (self=this) => {
-                self.renderSolution(ctx, true);
+                self.renderSolution(ctx, animationEnabled);
             });
         }
         else {
-            this.renderSolution(ctx, true);
+            this.renderSolution(ctx, animationEnabled);
         }
     }
 
     skipBtnClicked(ctx) {
-        if (this.state.currentGeneration === 'maze') { this.renderMaze(ctx, false) }
-        else if (this.state.currentGeneration === 'solution') { this.renderSolution(ctx, false) }
+        if      (this.state.currentGeneration === 'maze')       { this.renderMaze(ctx, false) }
+        else if (this.state.currentGeneration === 'solution')   { this.renderSolution(ctx, false) }
     }
 
     componentWillUnmount() {
@@ -332,7 +332,8 @@ const mapStateToProps = function(state) {
         skipClicked: state.generation.skipBtn,
         active: state.generation.active,
 
-        framerate: state.animation.framerate.val
+        framerate: state.animation.framerate.val,
+        animationEnabled: state.animation.enabled
     }
 };
 

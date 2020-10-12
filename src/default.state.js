@@ -38,7 +38,8 @@ const DefaultState = {
             val: 60,
             max: 60,
             min: 1
-        }
+        },
+        enabled: true
     }
 };
 

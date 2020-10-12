@@ -8,6 +8,11 @@ export const animationReducer = function(state=DefaultState.animation, action) {
             return produce(state, newState => { 
                 newState.framerate.val = action.payload.framerate 
             });
+        case ACTIONS.ANIMATION_ENABLED:
+        case ACTIONS.ANIMATION_DISABLED:
+            return produce(state, newState => { 
+                newState.enabled = action.payload.enabled
+            });
         default:
             return state;
     }
