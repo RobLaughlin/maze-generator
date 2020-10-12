@@ -127,7 +127,6 @@ class Maze extends React.Component {
 
         // Skip button handler
         else if (skipClicked) {
-            console.log(this.state.currentGeneration);
             if (this.state.currentGeneration === 'maze') {
                 this.renderMaze(ctx, false)
             }
@@ -197,6 +196,8 @@ class Maze extends React.Component {
 
     // Same as drawCell except looks at available neighbors to determine what path to draw
     drawCellSolution(ctx, cell) {
+        if (this.state.maze === null) { return; }
+
         ctx.strokeStyle = 'green';
         ctx.beginPath();
 
@@ -265,6 +266,7 @@ class Maze extends React.Component {
     // Render the maze without a solution
     renderMaze(ctx, animated=false) {
         this.cancelAnimation(ctx);
+        if (this.state.maze === null) { return; }
         this.setState({ currentGeneration: 'maze' }, (self=this) => {
             self.props.generating(true);
             self.renderCells(ctx, self.state.maze.ordered, animated, self.drawCell);
@@ -275,6 +277,7 @@ class Maze extends React.Component {
     // Render the maze with a solution
     renderSolution(ctx, animated=false) {
         this.cancelAnimation(ctx);
+        if (this.state.maze === null) { return; }
         this.setState({ currentGeneration: 'solution'}, (self=this) => {
             self.renderCells(ctx, self.state.maze.ordered, false, self.drawCell);
             self.props.generating(true);
