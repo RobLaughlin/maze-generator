@@ -130,15 +130,17 @@ class Maze {
         let initialCell = this._cells[index.row][index.column];
         
         initialCell.visited = true;
+        initialCell.start = true;
         initialCell.setWalls(false);
         stack.push(initialCell);
-
+        this._ordered.push(initialCell);
+        
         // (2) While the stack is not empty:
         while (stack.length > 0) {
         
             // (3) Pop a cell from the stack and make it a current cell.
             let currentCell = stack.pop();
-
+            
             // (4) If the current cell has any neighbours which have not been visited:
             let neighbors = this.getUnvisitedCells(currentCell.getNeighborIndices());
     
@@ -165,6 +167,9 @@ class Maze {
 
                 // Set the solved path
                 if (nextCell.index.row === endIndex.row && nextCell.index.column === endIndex.column) {
+                    nextCell.setWalls(false);
+                    nextCell.end = true;
+
                     stack.forEach(cell => {
                         let r = cell.index.row;
                         let c = cell.index.column;

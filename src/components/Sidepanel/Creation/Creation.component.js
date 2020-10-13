@@ -6,18 +6,19 @@ import { connect } from 'react-redux';
 
 class Creation extends React.Component {
     render() {
-        const { active, generate, changeEntrance, solve, skip } = this.props;
+        const { active, generate, entrance, changeEntrance, solve, skip } = this.props;
         return (
             <div>
                 <hr />
                 <div className="row mb-3">
                     <Form.Label className="col-4 ml-auto mt-2">Entrance:</Form.Label>
                     <Form.Control type="text" className="col-6 mr-auto rounded" as="select"
-                                    onChange={(e) => changeEntrance(e.target.value.toString())}>
-                        <option>Left</option>
-                        <option>Right</option>
-                        <option>Top</option>
-                        <option>Bottom</option>
+                        onChange={(e) => changeEntrance(e.target.value.toString())}
+                        value={entrance}>
+                            <option>Left</option>
+                            <option>Right</option>
+                            <option>Top</option>
+                            <option>Bottom</option>
                     </Form.Control>
                 </div>
                 <div className="row mb-3">
@@ -40,7 +41,8 @@ class Creation extends React.Component {
 
 const mapStateToProps = function(state) { 
     return { 
-        active: state.generation.active
+        active: state.generation.active,
+        entrance: state.generation.entrance
     } 
 };
 

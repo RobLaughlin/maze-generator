@@ -117,21 +117,52 @@ class Maze extends React.Component {
         clearHandlers();
     }
 
+    // Calculate a random starting point and ending point based on the opposite of the entrance given.
+    // Ex: Given "Top" will return a random cell on the top of the maze with an exit on the bottom.
+    static getMazeStartAndFinish(entrance, xCellLen, yCellLen) {
+        switch (entrance) {
+            case "Top":
+                return {
+                    start   : [Math.floor(Math.random() * xCellLen), yCellLen - 1],
+                    end     : [Math.floor(Math.random() * xCellLen), 0]
+                }
+            case "Bottom":
+                return {
+                    start   : [Math.floor(Math.random() * xCellLen), 0],
+                    end     : [Math.floor(Math.random() * xCellLen), yCellLen - 1]
+                }
+            case "Right":
+                return {
+                    start   : [xCellLen - 1, Math.floor(Math.random() * yCellLen)],
+                    end     : [0, Math.floor(Math.random() * yCellLen)]
+                }
+            case "Left":
+            default:
+                return {
+                    start   : [0, Math.floor(Math.random() * yCellLen)],
+                    end     : [xCellLen - 1, Math.floor(Math.random() * yCellLen)]
+                }
+        }
+    }
+
     generateBtnClicked(ctx) {
-        const {width, height, animationEnabled} = this.props;
+        const {width, height, animationEnabled, entrance} = this.props;
+
         // Always generate a new maze when the generate button is clicked
         let mz = new maze(width.val, height.val);
-        mz.generate(0, 0, width.val - 1, 0);
+        const { start, end } = Maze.getMazeStartAndFinish(entrance, width.val, height.val);
+        mz.generate(start[0], start[1], end[0], end[1]);
         this.setState({ maze: mz }, (self=this) => { self.renderMaze(ctx, animationEnabled); });
     }
 
     solveBtnClicked(ctx) {
-        const {width, height, animationEnabled} = this.props;
+        const {width, height, animationEnabled, entrance} = this.props;
 
         // Only generate a new solution if there is no current maze data
         if (this.state.maze === null) {
             let mz = new maze(width.val, height.val);
-            mz.generate(0, 0, width.val - 1, 0);
+            const { start, end } = Maze.getMazeStartAndFinish(entrance, width.val, height.val);
+            mz.generate(start[0], start[1], end[0], end[1]);
 
             this.setState({ maze: mz }, (self=this) => {
                 self.renderSolution(ctx, animationEnabled);
@@ -181,28 +212,38 @@ class Maze extends React.Component {
         ctx.strokeStyle = 'black';
         ctx.beginPath();
 
-        if (cell.down.enabled) {
-            ctx.moveTo(swcX, swcY);
-            ctx.lineTo(swcX + density, swcY);
-            ctx.stroke();
+        // Check if the cell being checked is the start or end of the maze and color the cell appropriately.
+        if ('end' in cell || 'start' in cell) {
+            if ('start' in cell)    { ctx.fillStyle = 'green'; }
+            else                    { ctx.fillStyle = 'red'; }
+
+            ctx.fillRect(swcX, swcY - density, density, density);
         }
 
-        if (cell.left.enabled) {
-            ctx.moveTo(swcX, swcY);
-            ctx.lineTo(swcX, swcY - density);
-            ctx.stroke();
-        }
-
-        if (cell.up.enabled) {
-            ctx.moveTo(swcX, swcY - density);
-            ctx.lineTo(swcX + density, swcY - density);
-            ctx.stroke();
-        } 
-        
-        if (cell.right.enabled) {
-            ctx.moveTo(swcX + density, swcY);
-            ctx.lineTo(swcX + density, swcY - density);
-            ctx.stroke();
+        else {
+            if (cell.down.enabled) {
+                ctx.moveTo(swcX, swcY);
+                ctx.lineTo(swcX + density, swcY);
+                ctx.stroke();
+            }
+    
+            if (cell.left.enabled) {
+                ctx.moveTo(swcX, swcY);
+                ctx.lineTo(swcX, swcY - density);
+                ctx.stroke();
+            }
+    
+            if (cell.up.enabled) {
+                ctx.moveTo(swcX, swcY - density);
+                ctx.lineTo(swcX + density, swcY - density);
+                ctx.stroke();
+            } 
+            
+            if (cell.right.enabled) {
+                ctx.moveTo(swcX + density, swcY);
+                ctx.lineTo(swcX + density, swcY - density);
+                ctx.stroke();
+            }
         }
 
         ctx.closePath();
@@ -331,6 +372,7 @@ const mapStateToProps = function(state) {
         solveClicked: state.generation.solveBtn,
         skipClicked: state.generation.skipBtn,
         active: state.generation.active,
+        entrance: state.generation.entrance,
 
         framerate: state.animation.framerate.val,
         animationEnabled: state.animation.enabled
