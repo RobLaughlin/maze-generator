@@ -57,7 +57,7 @@ class Dimensions extends React.Component {
                     />
                     <Warn
                         data-multiline={true}
-                        data-tip="Setting the density too high can<br>impact performance for very large mazes."
+                        data-tip="Setting the spacing too low can<br>impact performance for very large mazes."
                         className="col-2 m-auto"
                         style={{ visibility: (((density.val / (density.max - density.min)) < 0.3) ? 'visible' : 'hidden') }}>
                     </Warn>
