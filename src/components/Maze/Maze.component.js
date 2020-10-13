@@ -301,19 +301,27 @@ class Maze extends React.Component {
         let self = this;
  
         if (i < cells.length) {
-            draw(ctx, cells[i]);
-
             // Pretty ugly, but currently the only nice way to set state, control FPS, and use requestAnimationFrame 
             // all at the same time.
             if (animated) {
+                draw(ctx, cells[i]);
                 self.animationTimer = setTimeout(() => {
                     self.setState({
                         currentFrame: requestAnimationFrame(() => { self.renderCells(ctx, cells, animated, draw, i + 1)})
                     }) 
                 }, 1000 / self.props.framerate);
             } 
-            else { 
-                self.renderCells(ctx, cells, animated, draw, i + 1);
+            else {
+                // We run through each cell in the frame and draw it instead of using recursion if animation is disabled.
+                // For large mazes, using recursion can exceed the maximum call stack size
+                // which isn't a problem with requestAnimationFrame, but is a problem without it.
+                cells.forEach(cell => {
+                    draw(ctx, cell);
+                });
+                self.props.generating(false);
+                
+                // Old method (only works with small mazes)
+                // self.renderCells(ctx, cells, animated, draw, i + 1);
             } 
         }
         else {
