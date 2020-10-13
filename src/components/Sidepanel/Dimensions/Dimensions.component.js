@@ -3,6 +3,8 @@ import Form from 'react-bootstrap/Form';
 import { connect } from 'react-redux';
 import { changeWidth, changeHeight, changeDensity } from '../../../actions/Dimensions.actions';
 import MediaQuery from 'react-responsive';
+import { Warn } from './Dimensions.styled';
+import ReactTooltip from 'react-tooltip';
 
 class Dimensions extends React.Component {
     constructor(props) {
@@ -43,7 +45,7 @@ class Dimensions extends React.Component {
                 </MediaQuery>
                 <div className="row mr-1 ml-1">
                     <Form.Label className="col-4 ml-2 mt-1">Spacing:</Form.Label>
-                    <Form.Control className="col-7 mr-3" type="range" step="10" 
+                    <Form.Control className="col-5" type="range" step="10" 
                         onChange={(e) => {this.densityChanged(e,
                             width,
                             height,
@@ -53,8 +55,15 @@ class Dimensions extends React.Component {
                         max={density.max.toString()} 
                         value={density.val.toString()}
                     />
+                    <Warn
+                        data-multiline={true}
+                        data-tip="Setting the density too high can<br>impact performance for very large mazes."
+                        className="col-2 m-auto"
+                        style={{ visibility: (((density.val / (density.max - density.min)) < 0.3) ? 'visible' : 'hidden') }}>
+                    </Warn>
                 </div>
                 <hr />
+                <ReactTooltip />
             </div>
         );
     }
