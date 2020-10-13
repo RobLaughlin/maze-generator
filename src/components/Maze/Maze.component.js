@@ -217,7 +217,12 @@ class Maze extends React.Component {
             if ('start' in cell)    { ctx.fillStyle = 'green'; }
             else                    { ctx.fillStyle = 'red'; }
 
-            ctx.fillRect(swcX, swcY - density, density, density);
+            let cenX = (density * cell.index.row) + (density / 2);
+            let cenY = (density * (this.props.height.val - cell.index.column)) - (density / 2);
+
+            ctx.arc(cenX, cenY, density / 4, 0, 2 * Math.PI, false);
+            ctx.fill();
+            ctx.stroke();
         }
 
         else {
