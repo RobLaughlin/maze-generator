@@ -11,6 +11,7 @@ const Title = styled.h1`
     text-align: center;
     margin: 0px;
     padding-top: 8px;
+    font-family: Times;
 `;
 
 const Button_ = styled(Button)`
