@@ -3,6 +3,7 @@ import { Canvas } from './Maze.styled';
 import { connect } from 'react-redux';
 import { changeWidth, changeHeight, setMazeDims } from '../../actions/Dimensions.actions';
 import { clearHandlers as clear, generate, active as generating } from '../../actions/Generation.actions';
+import { downloadClicked as dlHandler } from '../../actions/Download.actions';
 
 import MediaQuery from 'react-responsive';
 import maze from '../../modules/maze/Maze';
@@ -27,6 +28,8 @@ class Maze extends React.Component {
         this.generateBtnClicked = this.generateBtnClicked.bind(this);
         this.solveBtnClicked    = this.solveBtnClicked.bind(this);
         this.skipBtnClicked     = this.skipBtnClicked.bind(this);
+        this.downloadBtnClicked = this.downloadBtnClicked.bind(this);
+        this.generateMaze       = this.generateMaze.bind(this);
 
         this.canvasContainer    = React.createRef();
         this.canvas             = React.createRef();
@@ -107,14 +110,16 @@ class Maze extends React.Component {
             this.setState({ maze: null });
         }
 
-        const { generateClicked, solveClicked, skipClicked, clearHandlers } = this.props;
+        const { generateClicked, solveClicked, skipClicked, dlClicked, clearHandlers, downloadClicked } = this.props;
 
         
         if      (generateClicked)   { this.generateBtnClicked(ctx) }
         else if (solveClicked)      { this.solveBtnClicked(ctx); }
         else if (skipClicked)       { this.skipBtnClicked(ctx); }
-        
+        else if (dlClicked)         { this.downloadBtnClicked(ctx); }
+
         clearHandlers();
+        downloadClicked(false);
     }
 
     // Calculate a random starting point and ending point based on the opposite of the entrance given.
@@ -145,25 +150,36 @@ class Maze extends React.Component {
         }
     }
 
-    generateBtnClicked(ctx) {
-        const {width, height, animationEnabled, entrance} = this.props;
-
-        // Always generate a new maze when the generate button is clicked
+    generateMaze() {
+        const {width, height, entrance} = this.props;
         let mz = new maze(width.val, height.val);
         const { start, end } = Maze.getMazeStartAndFinish(entrance, width.val, height.val);
         mz.generate(start[0], start[1], end[0], end[1]);
+        return mz
+    }
+
+    downloadBtnClicked(ctx) {
+        var link = document.createElement('a');
+        link.setAttribute('download', 'Maze.png');
+        link.setAttribute('href', this.canvas.current.toDataURL("image/png").replace("image/png", "image/octet-stream"));
+        link.click(); 
+    }
+
+    
+    generateBtnClicked(ctx) {
+        const {animationEnabled} = this.props;
+
+        // Always generate a new maze when the generate button is clicked
+        let mz = this.generateMaze();
         this.setState({ maze: mz }, (self=this) => { self.renderMaze(ctx, animationEnabled); });
     }
 
     solveBtnClicked(ctx) {
-        const {width, height, animationEnabled, entrance} = this.props;
+        const {animationEnabled} = this.props;
 
         // Only generate a new solution if there is no current maze data
         if (this.state.maze === null) {
-            let mz = new maze(width.val, height.val);
-            const { start, end } = Maze.getMazeStartAndFinish(entrance, width.val, height.val);
-            mz.generate(start[0], start[1], end[0], end[1]);
-
+            let mz = this.generateMaze();
             this.setState({ maze: mz }, (self=this) => {
                 self.renderSolution(ctx, animationEnabled);
             });
@@ -384,11 +400,11 @@ const mapStateToProps = function(state) {
         generateClicked: state.generation.generateBtn,
         solveClicked: state.generation.solveBtn,
         skipClicked: state.generation.skipBtn,
-        active: state.generation.active,
-        entrance: state.generation.entrance,
 
         framerate: state.animation.framerate.val,
-        animationEnabled: state.animation.enabled
+        animationEnabled: state.animation.enabled,
+
+        dlClicked: state.download.clicked
     }
 };
 
@@ -399,7 +415,8 @@ const mapDispatchToProps = function(dispatch) {
         setMazeDims     : (width, height)       => { dispatch(setMazeDims(width, height))},
         startGeneration : ()                    => { dispatch(generate()) },
         clearHandlers   : ()                    => { dispatch(clear()) },
-        generating      : (status)              => { dispatch(generating(status)) }
+        generating      : (status)              => { dispatch(generating(status)) },
+        downloadClicked : (click)               => { dispatch(dlHandler(click)) }
     }
 };
 

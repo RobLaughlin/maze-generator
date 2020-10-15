@@ -40,6 +40,10 @@ const DefaultState = {
             min: 1
         },
         enabled: true
+    },
+
+    download: {
+        clicked: false
     }
 };
 

@@ -1,0 +1,1 @@
+export const DOWNLOAD_CLICKED = "DOWNLOAD_CLICKED";

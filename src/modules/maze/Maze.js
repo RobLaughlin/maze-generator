@@ -1,6 +1,5 @@
 import GridIndex from "./GridIndex";
 import Cell from "./Cell";
-import { produce } from 'immer';
 
 /**
  * @module Maze
