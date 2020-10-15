@@ -36,13 +36,13 @@ class Maze {
 
     /**
      * 1D List of cells that keeps the order of the cells in which they were chosen during generation.
-     * @type {(Cell)|Array} 
+     * @type {Cell|Array} 
      */
     get ordered() { return this._ordered }
 
     /**
      * 1D List of cells that keeps the ordered solution of the cells in which they were chosen during generation.
-     * @type {(Cell)|Array} 
+     * @type {Cell|Array} 
      */
     get orderedSolution() { return this._orderedSolution }
 

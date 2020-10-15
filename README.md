@@ -5,10 +5,17 @@ Generates a maze and maze animation using recursive depth-first search.
 
 ## Building & Testing
 
-### Testing
-Runs npx babel-node @ src/test/index.js.
+### Start and build React app
 ```
-npm run test-js
+npm run start
+npm run build
+```
+
+### Testing
+To build the custom maze module (outputs to /src/tests/):
+```
+npm run build-maze-browser
+npm run build-maze-instance
 ```
 
 ### Compile docs

@@ -37,8 +37,8 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "test-js": "npx babel-node src/tests/index.js",
-    "build-maze-browser": "webpack src/modules/maze/Browser.js -o src/tests/maze.bundle.js",
-    "build-maze-instance": "webpack src/modules/maze/Maze.js -o src/tests/maze2.bundle.js",
+    "build-maze-browser": "webpack src/modules/maze/Browser.js -o src/tests/maze-browser.bundle.js",
+    "build-maze-instance": "webpack src/modules/maze/Maze.js -o src/tests/maze-instance.bundle.js",
     "docs": "jsdoc -c jsdoc.json"
   },
   "repository": {
