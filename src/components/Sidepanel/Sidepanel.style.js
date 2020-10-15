@@ -4,6 +4,8 @@ import Button from 'react-bootstrap/Button';
 const Container = styled.div`
     min-width: 300px;
     margin-top: 0;
+    height: 100vh;
+    min-height: 700px;
 `;
 
 const Title = styled.h1`
