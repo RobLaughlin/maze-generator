@@ -1,7 +1,9 @@
 # Maze Generator
 Generates a maze and maze animation using recursive depth-first search.
 
-[Docs](https://roblaughlin.github.io/maze-generator)
+[Docs](https://roblaughlin.github.io/maze-generator)  
+  
+Live Demo: https://www.animatedmaze.com/
 
 ## Building & Testing
 
