@@ -400,6 +400,7 @@ const mapStateToProps = function(state) {
         generateClicked: state.generation.generateBtn,
         solveClicked: state.generation.solveBtn,
         skipClicked: state.generation.skipBtn,
+        entrance: state.generation.entrance,
 
         framerate: state.animation.framerate.val,
         animationEnabled: state.animation.enabled,
