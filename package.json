@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Generates a maze and maze animation using recursive depth-first search.",
   "private": true,
+  "homepage": "./",
   "dependencies": {
     "@styled-icons/entypo": "^10.18.0",
     "@testing-library/jest-dom": "^4.2.4",
