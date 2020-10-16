@@ -76,8 +76,11 @@ class Dimensions extends React.Component {
         const density   = parseInt(e.target.value);
         const maxWidth  = Math.floor(mazeWidth / density);
         const maxHeight = Math.floor(mazeHeight / density);
-        const relWidth  = Math.round((oldWidth.val / oldWidth.max) * maxWidth);
-        const relHeight = Math.round((oldHeight.val / oldHeight.max) * maxHeight);
+        let relWidth  = Math.round((oldWidth.val / oldWidth.max) * maxWidth);
+        let relHeight = Math.round((oldHeight.val / oldHeight.max) * maxHeight);
+        
+        if (relWidth === 0) { relWidth = 1; }
+        if (relHeight === 0) { relHeight = 1; }
 
         this.props.setDensity(density);
         this.props.setWidth(relWidth, maxWidth);
